@@ -1,0 +1,26 @@
+[
+    {
+        "id": 1,
+        "name": "Pizza Place",
+        "location": "123 Pizza St",
+        "cuisine": "Italian",
+        "rating": 4.5,
+        "image": "assets/pizza_place.jpg"
+    },
+    {
+        "id": 2,
+        "name": "Sushi Spot",
+        "location": "456 Sushi Ave",
+        "cuisine": "Japanese",
+        "rating": 4.7,
+        "image": "assets/sushi_spot.jpg"
+    },
+    {
+        "id": 3,
+        "name": "Burger Joint",
+        "location": "789 Burger Blvd",
+        "cuisine": "American",
+        "rating": 4.3,
+        "image": "assets/burger_joint.jpg"
+    }
+]

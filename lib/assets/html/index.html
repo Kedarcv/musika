@@ -1,0 +1,57 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Musika Zw</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body class="bg-cover bg-center" style="background-image: url('assets/food.jpeg');"> <!-- Updated path to the local image -->
+    <div class="bg-black bg-opacity-50 min-h-screen flex flex-col">
+        <header class="flex justify-between items-center p-4">
+            <div class="flex items-center">
+                <img src="assets/logo.png" alt="Musika Logo" class="h-10 mr-4"> <!-- Updated path to the logo -->
+                <span class="text-white text-2xl font-bold">Musika Zw</span>
+            </div>
+            <div>
+                <button id="loginButton" class="text-black bg-white py-2 px-4 rounded-full mr-2">Log in</button>
+                <button id="signupButton" class="text-black bg-white py-2 px-4 rounded-full">Sign up</button>
+            </div>
+        </header>
+        <main class="flex-grow flex flex-col justify-center items-center text-center">
+            <h1 class="text-white text-5xl font-bold mb-6">Order delivery near you</h1>
+            <div class="flex items-center bg-white rounded-full overflow-hidden shadow-lg w-11/12 max-w-2xl">
+                <div class="flex items-center px-4">
+                    <i class="fas fa-map-marker-alt text-gray-500"></i>
+                    <input type="text" id="deliveryAddress" placeholder="Enter delivery address" class="flex-grow py-4 px-2 text-lg outline-none">
+                </div>
+                <div class="flex items-center border-l border-gray-300 px-4">
+                    <i class="fas fa-clock text-gray-500"></i>
+                    <select id="deliveryTime" class="text-lg outline-none">
+                        <option>Deliver now</option>
+                        <option>Schedule for later</option>
+                    </select>
+                </div>
+                <button id="searchButton" class="bg-black text-white py-4 px-6 text-lg">Search here</button>
+            </div>
+            <a href="#" class="text-white mt-4">Or Sign In</a>
+        </main>
+    </div>
+    <script>
+        document.getElementById('loginButton').addEventListener('click', function() {
+            window.location.href = 'login.html';
+        });
+
+        document.getElementById('signupButton').addEventListener('click', function() {
+            window.location.href = 'signup-select.html';
+        });
+
+        document.getElementById('searchButton').addEventListener('click', async function() {
+            const address = document.getElementById('deliveryAddress').value;
+            const time = document.getElementById('deliveryTime').value;
+            alert(`Searching for delivery options to ${address} at ${time}`);
+            // Here you can add functionality to fetch delivery options from an API
+        });
+    </script>
+</body>
+</html>

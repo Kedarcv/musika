@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order - Musika</title>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header class="main-header">
+        <nav class="nav-container">
+            <div class="logo">
+                <h1>Musika</h1>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="login.html">Login</a>
+                <a href="signup.html">Sign Up</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="order-section">
+            <h2>Order from Restaurant</h2>
+            <div id="menuItems">
+                <!-- Menu items will be dynamically added here -->
+            </div>
+            <button id="placeOrder" class="admin-btn">Place Order</button>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <p>&copy; 2024 Musika. All rights reserved.</p>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        // Function to fetch menu items based on restaurant ID
+        async function fetchMenu(restaurantId) {
+            try {
+                const response = await fetch(`/api/restaurant/${restaurantId}/menu`);
+                const menuItems = await response.json();
+                const menuContainer = document.getElementById('menuItems');
+
+                menuItems.forEach(item => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'menu-item';
+                    itemDiv.innerHTML = `
+                        <h3>${item.name}</h3>
+                        <p>${item.description}</p>
+                        <p>Price: $${item.price}</p>
+                        <button class="add-to-cart" data-item-id="${item.id}">Add to Cart</button>
+                    `;
+                    menuContainer.appendChild(itemDiv);
+                });
+            } catch (error) {
+                console.error('Error fetching menu items:', error);
+            }
+        }
+
+        // Example call to fetch menu for a specific restaurant
+        const restaurantId = new URLSearchParams(window.location.search).get('id');
+        fetchMenu(restaurantId);
+    </script>
+</body>
+</html>

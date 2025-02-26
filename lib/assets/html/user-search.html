@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>User Search - Musika</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+</head>
+<body class="bg-white text-gray-900">
+    <header class="flex items-center justify-between p-4 border-b">
+        <div class="flex items-center space-x-4">
+            <button class="text-2xl">
+                <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="text-2xl font-bold">Musika</h1>
+        </div>
+        <div class="flex items-center space-x-4">
+            <button class="px-4 py-2 border rounded-full">Delivery</button>
+            <button class="px-4 py-2 border rounded-full">Pickup</button>
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-map-marker-alt"></i>
+                <span id="userLocation">Detecting location...</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="relative">
+                <input class="px-4 py-2 border rounded-full" placeholder="Search Musika" type="text"/>
+                <i class="fas fa-search absolute right-3 top-3"></i>
+            </div>
+            <button class="text-xl">
+                <i class="fas fa-shopping-cart"></i>
+            </button>
+            <button class="px-4 py-2 border rounded-full">Log in</button>
+            <button class="px-4 py-2 border rounded-full">Sign up</button>
+        </div>
+    </header>
+    <main class="p-4">
+        <section class="search-section">
+            <h2 class="text-xl font-semibold">Search for Food</h2>
+            <form id="searchForm" class="space-y-4">
+                <div class="form-group">
+                    <label for="location" class="block">Location:</label>
+                    <input type="text" id="location" class="admin-input border rounded p-2 w-full" placeholder="Enter your location" required>
+                </div>
+                <div class="flex space-x-4">
+                    <div class="form-group flex-1">
+                        <label for="minPrice" class="block">Min Price:</label>
+                        <input type="number" id="minPrice" class="admin-input border rounded p-2 w-full" placeholder="Min Price">
+                    </div>
+                    <div class="form-group flex-1">
+                        <label for="maxPrice" class="block">Max Price:</label>
+                        <input type="number" id="maxPrice" class="admin-input border rounded p-2 w-full" placeholder="Max Price">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="cuisine" class="block">Type of Food:</label>
+                    <select id="cuisine" class="admin-input border rounded p-2 w-full">
+                        <option value="">Select Cuisine</option>
+                        <option value="Italian">Italian</option>
+                        <option value="Chinese">Chinese</option>
+                        <option value="Indian">Indian</option>
+                        <option value="Mexican">Mexican</option>
+                        <!-- Add more cuisines as needed -->
+                    </select>
+                </div>
+                <button type="submit" class="admin-btn bg-blue-500 text-white rounded p-2">Search</button>
+            </form>
+            <div id="searchResults" class="search-results mt-4">
+                <!-- Search results will be displayed here -->
+            </div>
+        </section>
+    </main>
+    <footer class="main-footer">
+        <p class="text-center">&copy; 2024 Musika. All rights reserved.</p>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        // Function to detect user location
+        function detectLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(async (position) => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+
+                    // Reverse geocoding to get the location name
+                    const response = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
+                    const locationData = await response.json();
+                    const locationName = locationData.locality || locationData.city || "Closest known location not found";
+
+                    document.getElementById('userLocation').innerText = locationName;
+                }, () => {
+                    document.getElementById('userLocation').innerText = 'Location access denied. Please enter your location.';
+                });
+            } else {
+                document.getElementById('userLocation').innerText = 'Geolocation is not supported by this browser.';
+            }
+        }
+
+        // Call the function to detect location on page load
+        window.onload = detectLocation;
+
+        document.getElementById('searchForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const location = document.getElementById('location').value;
+            const minPrice = document.getElementById('minPrice').value;
+            const maxPrice = document.getElementById('maxPrice').value;
+            const cuisine = document.getElementById('cuisine').value;
+
+            try {
+                const response = await fetch(`/api/restaurants/search?location=${location}&minPrice=${minPrice}&maxPrice=${maxPrice}&cuisine=${cuisine}`);
+                const results = await response.json();
+                const searchResults = document.getElementById('searchResults');
+
+                searchResults.innerHTML = ''; // Clear previous results
+
+                if (response.ok) {
+                    results.forEach(restaurant => {
+                        const resultDiv = document.createElement('div');
+                        resultDiv.className = 'result-card bg-gray-200 p-4 rounded mb-2';
+                        resultDiv.innerHTML = `
+                            <h3 class="font-bold">${restaurant.name}</h3>
+                            <p>Cuisine: ${restaurant.cuisine}</p>
+                            <p>Price Range: $${restaurant.priceRange}</p>
+                            <button class="order-button bg-green-500 text-white rounded p-2" data-restaurant-id="${restaurant.id}">Order Now</button>
+                        `;
+                        searchResults.appendChild(resultDiv);
+                    });
+                } else {
+                    searchResults.innerHTML = `<p>${results.message}</p>`;
+                }
+            } catch (error) {
+                console.error('Error fetching search results:', error);
+            }
+        });
+    </script>
+</body>
+</html>

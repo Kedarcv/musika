@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurants - Musika</title>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header class="main-header">
+        <nav class="nav-container">
+            <div class="logo">
+                <h1>Musika</h1>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="login.html">Login</a>
+                <a href="signup.html">Sign Up</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="restaurant-list">
+            <h2>Explore Local Restaurants</h2>
+<div class="restaurant-grid" id="restaurantGrid">
+    <!-- Restaurant cards will be dynamically added here -->
+    <div class="restaurant-card">
+        <img src="https://placehold.co/150x150" alt="Restaurant Name">
+        <h3>Restaurant Name</h3>
+        <p>Cuisine: Italian</p>
+        <p>Rating: 4.5</p>
+        <button class="order-button" data-restaurant-id="1">View Menu</button>
+    </div>
+                <!-- Restaurant cards will be dynamically added here -->
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <p>&copy; 2024 Musika. All rights reserved.</p>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        async function fetchRestaurants() {
+            try {
+                const response = await fetch('/api/restaurants');
+                const restaurants = await response.json();
+                const restaurantGrid = document.getElementById('restaurantGrid');
+
+                restaurants.forEach(restaurant => {
+                    const card = document.createElement('div');
+                    card.className = 'restaurant-card';
+                    card.innerHTML = `
+                        <img src="${restaurant.image}" alt="${restaurant.name}">
+                        <h3>${restaurant.name}</h3>
+                        <p>Cuisine: ${restaurant.cuisine}</p>
+                        <p>Rating: ${restaurant.rating}</p>
+                    `;
+                    restaurantGrid.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Error fetching restaurants:', error);
+            }
+        }
+
+        fetchRestaurants();
+    </script>
+</body>
+</html>
+</create_file>

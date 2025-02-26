@@ -1,0 +1,23 @@
+[
+    {
+        "id": 1,
+        "name": "John Doe",
+        "vehicle": "Bike",
+        "rating": 4.8,
+        "available": true
+    },
+    {
+        "id": 2,
+        "name": "Jane Smith",
+        "vehicle": "Car",
+        "rating": 4.6,
+        "available": true
+    },
+    {
+        "id": 3,
+        "name": "Mike Johnson",
+        "vehicle": "Scooter",
+        "rating": 4.5,
+        "available": true
+    }
+]

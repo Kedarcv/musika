@@ -1,0 +1,81 @@
+<html>
+ <head>
+  <title>
+   Musika Login
+  </title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+ </head>
+ <body class="bg-white flex items-center justify-center min-h-screen">
+  <div class="w-full max-w-md mx-auto p-4">
+   <div class="text-center mb-8">
+    <img alt="Uber Eats Logo" class="mx-auto mb-4" height="50" src="https://storage.googleapis.com/a1aa/image/Q7BkRqvxQ04XXGS-IyEmrc2J9UPeRsX2IV3Hco7qj0k.jpg" width="150"/>
+   </div>
+   <div class="bg-white p-8 rounded-lg shadow-md">
+    <h2 class="text-xl font-semibold mb-4">
+     What's your phone number or email?
+    </h2>
+    <input id="loginInput" class="w-full p-3 mb-4 border border-gray-300 rounded-lg" placeholder="Enter phone number or email" type="text"/>
+    <button id="loginButton" class="w-full bg-black text-white p-3 rounded-lg mb-4">
+     Continue
+    </button>
+    <div class="flex items-center justify-center mb-4">
+     <hr class="w-full border-gray-300"/>
+     <span class="px-2 text-gray-500">
+      or
+     </span>
+     <hr class="w-full border-gray-300"/>
+    </div>
+    <button class="w-full bg-gray-100 text-gray-700 p-3 rounded-lg mb-4 flex items-center justify-center">
+     <i class="fab fa-google mr-2"></i>
+     Continue with Google
+    </button>
+    <button class="w-full bg-gray-100 text-gray-700 p-3 rounded-lg mb-4 flex items-center justify-center">
+     <i class="fab fa-apple mr-2"></i>
+     Continue with Apple
+    </button>
+    <div class="flex items-center justify-center mb-4">
+     <hr class="w-full border-gray-300"/>
+     <span class="px-2 text-gray-500">
+      or
+     </span>
+     <hr class="w-full border-gray-300"/>
+    </div>
+    <button class="w-full bg-gray-100 text-gray-700 p-3 rounded-lg flex items-center justify-center">
+     <i class="fas fa-qrcode mr-2"></i>
+     Log in with QR code
+    </button>
+    <p class="text-xs text-gray-500 mt-4">
+     By proceeding, you consent to get calls, WhatsApp or SMS/RCS messages, including by automated means, from Musika and its affiliates to the number provided.
+    </p>
+   </div>
+  </div>
+  <script>
+      document.getElementById('loginButton').addEventListener('click', async function() {
+          const input = document.getElementById('loginInput').value;
+          if (input) {
+              try {
+                  const response = await fetch('/api/login', {
+                      method: 'POST',
+                      headers: {
+                          'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify({ email: input, password: 'placeholderPassword' }), // Placeholder password
+                  });
+
+                  if (!response.ok) {
+                      throw new Error('Network response was not ok');
+                  }
+
+                  const data = await response.json();
+                  console.log(data); // Handle the login response from the backend
+              } catch (error) {
+                  console.error('Error logging in:', error);
+              }
+          } else {
+              alert('Please enter your phone number or email.');
+          }
+      });
+  </script>
+ </body>
+</html>

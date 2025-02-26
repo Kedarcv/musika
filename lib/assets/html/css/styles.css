@@ -1,0 +1,66 @@
+/* General Styles */
+body {
+    font-family: 'Ubuntu', sans-serif;
+    background-color: #f7fafc; /* Tailwind's gray-100 */
+}
+
+/* Header Styles */
+.main-header {
+    background-color: #ffffff; /* White */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Navigation Styles */
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+}
+
+/* Search Section Styles */
+.search-section {
+    background-color: #ffffff; /* White */
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.admin-input {
+    border: 1px solid #cbd5e0; /* Tailwind's gray-300 */
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+    width: 100%;
+}
+
+/* Button Styles */
+.admin-btn {
+    background-color: #4299e1; /* Tailwind's blue-500 */
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+}
+
+.admin-btn:hover {
+    background-color: #3182ce; /* Tailwind's blue-600 */
+}
+
+/* Result Card Styles */
+.result-card {
+    background-color: #edf2f7; /* Tailwind's gray-200 */
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Footer Styles */
+.main-footer {
+    text-align: center;
+    padding: 1rem;
+}
