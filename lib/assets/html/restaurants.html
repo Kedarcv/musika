@@ -6,6 +6,8 @@
     <title>Restaurants - Musika</title>
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
+    <!-- Add Google Maps API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1IiwBut2vPRatOTrZ8jDbYogAxTKXT5Q&callback=initMap" async defer></script>
 </head>
 <body>
     <header class="main-header">
@@ -24,17 +26,16 @@
     <main>
         <section class="restaurant-list">
             <h2>Explore Local Restaurants</h2>
-<div class="restaurant-grid" id="restaurantGrid">
-    <!-- Restaurant cards will be dynamically added here -->
-    <div class="restaurant-card">
-        <img src="https://placehold.co/150x150" alt="Restaurant Name">
-        <h3>Restaurant Name</h3>
-        <p>Cuisine: Italian</p>
-        <p>Rating: 4.5</p>
-        <button class="order-button" data-restaurant-id="1">View Menu</button>
-    </div>
+            <input type="text" id="searchInput" placeholder="Search for locations..." onkeyup="filterLocations()">
+            <div id="suggestions" class="suggestions-dropdown"></div>
+            <div class="restaurant-grid" id="restaurantGrid">
                 <!-- Restaurant cards will be dynamically added here -->
             </div>
+        </section>
+        <!-- Map Container -->
+        <section class="map-container">
+            <h2>Restaurant Locations</h2>
+            <div id="map" style="height: 400px; width: 100%;"></div>
         </section>
     </main>
 
@@ -44,10 +45,12 @@
 
     <script src="js/main.js"></script>
     <script>
+        let restaurants = []; // Store fetched restaurant data
+
         async function fetchRestaurants() {
             try {
                 const response = await fetch('/api/restaurants');
-                const restaurants = await response.json();
+                restaurants = await response.json(); // Store the restaurant data
                 const restaurantGrid = document.getElementById('restaurantGrid');
 
                 restaurants.forEach(restaurant => {
@@ -61,8 +64,49 @@
                     `;
                     restaurantGrid.appendChild(card);
                 });
+
+                // Initialize the map after fetching restaurants
+                initMap(restaurants);
             } catch (error) {
                 console.error('Error fetching restaurants:', error);
+            }
+        }
+
+        function initMap(restaurants) {
+            const map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 10,
+                center: { lat: -34.397, lng: 150.644 } // Default center
+            });
+
+            restaurants.forEach(restaurant => {
+                const marker = new google.maps.Marker({
+                    position: { lat: parseFloat(restaurant.location.split(',')[0]), lng: parseFloat(restaurant.location.split(',')[1]) },
+                    map: map,
+                    title: restaurant.name
+                });
+            });
+        }
+
+        function filterLocations() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const suggestions = document.getElementById('suggestions');
+            suggestions.innerHTML = ''; // Clear previous suggestions
+
+            if (input) {
+                const filteredRestaurants = restaurants.filter(restaurant => 
+                    restaurant.name.toLowerCase().includes(input)
+                );
+
+                filteredRestaurants.forEach(restaurant => {
+                    const suggestionItem = document.createElement('div');
+                    suggestionItem.className = 'suggestion-item';
+                    suggestionItem.innerText = restaurant.name;
+                    suggestionItem.onclick = () => {
+                        document.getElementById('searchInput').value = restaurant.name;
+                        suggestions.innerHTML = ''; // Clear suggestions
+                    };
+                    suggestions.appendChild(suggestionItem);
+                });
             }
         }
 
@@ -70,4 +114,3 @@
     </script>
 </body>
 </html>
-</create_file>

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_webview_plugin/flutter_webview_plugin.dart'; // Updated import
+import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 
 void main() {
   runApp(MusikaApp());

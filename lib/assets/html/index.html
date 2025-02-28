@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -5,12 +6,14 @@
     <title>Musika Zw</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1IiwBut2vPRatOTrZ8jDbYogAxTKXT5Q&libraries=places&callback=initAutocomplete" async defer></script>
 </head>
-<body class="bg-cover bg-center" style="background-image: url('assets/food.jpeg');"> <!-- Updated path to the local image -->
-    <div class="bg-black bg-opacity-50 min-h-screen flex flex-col">
+<body class="bg-cover bg-center">
+    <img src="food.jpeg" alt="Background Image" class="absolute inset-0 w-full h-full object-cover z-0"> <!-- Added image as background -->
+    <div class="bg-black bg-opacity-50 min-h-screen flex flex-col relative z-10">
         <header class="flex justify-between items-center p-4">
             <div class="flex items-center">
-                <img src="assets/logo.png" alt="Musika Logo" class="h-10 mr-4"> <!-- Updated path to the logo -->
+                <img src="logo.jpeg" alt="Musika Logo" class="h-10 mr-4"> <!-- Updated path to the logo -->
                 <span class="text-white text-2xl font-bold">Musika Zw</span>
             </div>
             <div>
@@ -18,12 +21,12 @@
                 <button id="signupButton" class="text-black bg-white py-2 px-4 rounded-full">Sign up</button>
             </div>
         </header>
-        <main class="flex-grow flex flex-col justify-center items-center text-center">
+        <main class="flex-grow flex flex-col justify-center items-center text-center overflow-hidden">
             <h1 class="text-white text-5xl font-bold mb-6">Order delivery near you</h1>
-            <div class="flex items-center bg-white rounded-full overflow-hidden shadow-lg w-11/12 max-w-2xl">
+            <div class="flex items-center bg-white rounded-full overflow-hidden shadow-lg w-full max-w-2xl flex-wrap">
                 <div class="flex items-center px-4">
                     <i class="fas fa-map-marker-alt text-gray-500"></i>
-                    <input type="text" id="deliveryAddress" placeholder="Enter delivery address" class="flex-grow py-4 px-2 text-lg outline-none">
+                    <input type="text" id="deliveryAddress" placeholder="Enter delivery address" class="flex-grow py-4 px-2 text-lg outline-none" onkeyup="filterLocations()">
                 </div>
                 <div class="flex items-center border-l border-gray-300 px-4">
                     <i class="fas fa-clock text-gray-500"></i>
@@ -32,12 +35,61 @@
                         <option>Schedule for later</option>
                     </select>
                 </div>
-                <button id="searchButton" class="bg-black text-white py-4 px-6 text-lg">Search here</button>
+                <button id="searchButton" class="bg-black text-white py-4 px-6 text-lg rounded-full">Select Location</button>
             </div>
-            <a href="#" class="text-white mt-4">Or Sign In</a>
+            <div id="suggestions" class="suggestions-dropdown"></div>
+            <a href="login.html" class="text-white mt-4">Or Sign In</a>
         </main>
     </div>
     <script>
+        let autocomplete;
+        let restaurants = []; // Store fetched restaurant data
+
+        function initAutocomplete() {
+            autocomplete = new google.maps.places.Autocomplete(
+                document.getElementById('deliveryAddress'), { types: ['geocode'], componentRestrictions: { country: ['zw', 'za'] } });
+            autocomplete.addListener('place_changed', function() {
+                const place = autocomplete.getPlace();
+                if (place.geometry) {
+                    alert(`Selected place: ${place.formatted_address}`);
+                } else {
+                    alert('Location not found. Please try a different address.');
+                }
+            });
+        }
+
+        async function fetchRestaurants() {
+            try {
+                const response = await fetch('/api/restaurants');
+                restaurants = await response.json(); // Store the restaurant data
+            } catch (error) {
+                console.error('Error fetching restaurants:', error);
+            }
+        }
+
+        function filterLocations() {
+            const input = document.getElementById('deliveryAddress').value.toLowerCase();
+            const suggestions = document.getElementById('suggestions');
+            suggestions.innerHTML = ''; // Clear previous suggestions
+
+            if (input) {
+                const filteredRestaurants = restaurants.filter(restaurant => 
+                    restaurant.name.toLowerCase().includes(input)
+                );
+
+                filteredRestaurants.forEach(restaurant => {
+                    const suggestionItem = document.createElement('div');
+                    suggestionItem.className = 'suggestion-item';
+                    suggestionItem.innerText = restaurant.name;
+                    suggestionItem.onclick = () => {
+                        document.getElementById('deliveryAddress').value = restaurant.name;
+                        suggestions.innerHTML = ''; // Clear suggestions
+                    };
+                    suggestions.appendChild(suggestionItem);
+                });
+            }
+        }
+
         document.getElementById('loginButton').addEventListener('click', function() {
             window.location.href = 'login.html';
         });
@@ -49,9 +101,21 @@
         document.getElementById('searchButton').addEventListener('click', async function() {
             const address = document.getElementById('deliveryAddress').value;
             const time = document.getElementById('deliveryTime').value;
-            alert(`Searching for delivery options to ${address} at ${time}`);
-            // Here you can add functionality to fetch delivery options from an API
+            if (address) {
+                alert(`Searching for delivery options to ${address} at ${time}`);
+                window.location.href = 'user-search.html';
+                // Here you can add functionality to fetch delivery options from an API
+            } else {
+                alert('Please enter a delivery address.');
+            }
         });
+
+        // Initialize the autocomplete and fetch restaurants when the window loads
+        window.onload = function() {
+            initAutocomplete();
+            fetchRestaurants();
+        };
     </script>
 </body>
 </html>
+</create_file>

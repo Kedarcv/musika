@@ -12,6 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_webview_plugin: any # Use this line for webview support across platforms
+  webview_flutter: ^4.10.0
   # Keep this line if you still need it for mobile
 
 dev_dependencies:

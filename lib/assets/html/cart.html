@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart - Musika</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body class="bg-gray-100">
+    <header class="flex justify-between items-center p-4 bg-white shadow">
+        <div class="flex items-center">
+            <img src="logo.jpeg" alt="Musika Logo" class="h-10 mr-4">
+            <span class="text-2xl font-bold">Musika</span>
+        </div>
+        <div>
+            <button id="profileButton" class="text-black bg-white py-2 px-4 rounded-full">User Profile</button>
+        </div>
+    </header>
+
+    <main class="flex-grow flex flex-col justify-center items-center text-center p-4">
+        <h1 class="text-3xl font-bold mb-4">Your Cart</h1>
+        <div id="cartItems" class="w-11/12 max-w-2xl bg-white rounded-lg shadow-lg p-4">
+            <!-- Cart items will be dynamically added here -->
+        </div>
+        <button id="checkoutButton" class="bg-black text-white py-4 px-6 text-lg mt-4">Proceed to Checkout</button>
+    </main>
+
+    <!-- Popup for notifications -->
+    <div id="popup" class="fixed top-0 right-0 m-4 p-4 bg-white shadow-lg rounded-lg hidden z-50">
+        <div class="popup items-center p-4">
+            <p><a href="#" id="dashboardLink">Dashboard</a></p>
+            <p><a href="#" id="cartLink">Cart</a></p>
+            <p><a href="#" id="logoutLink">Logout</a></p>
+        </div>
+    </div>
+
+    <script>
+        const cart = [];
+
+        // Function to fetch cart items from the API
+        async function fetchCartItems() {
+            try {
+                const response = await fetch('/api/cart'); // Replace with your API endpoint
+                const data = await response.json();
+                data.forEach(item => {
+                    cart.push(item);
+                });
+                displayCart();
+            } catch (error) {
+                console.error('Error fetching cart items:', error);
+            }
+        }
+
+        function displayCart() {
+            const cartItemsDiv = document.getElementById('cartItems');
+            cartItemsDiv.innerHTML = ''; // Clear previous items
+            cart.forEach((item, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'flex justify-between items-center p-2 border-b';
+                itemDiv.innerHTML = `<span>${item.name}</span> <button onclick="removeFromCart(${index})" class="text-red-500">Remove</button>`;
+                cartItemsDiv.appendChild(itemDiv);
+            });
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            displayCart();
+        }
+
+        document.getElementById('checkoutButton').addEventListener('click', function() {
+            // Navigate to checkout page (replace with actual URL)
+            window.location.href = 'checkout.html';
+        });
+
+        // Fetch cart items when the page loads
+        window.onload = fetchCartItems;
+    </script>
+</body>
+</html>

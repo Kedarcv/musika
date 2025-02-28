@@ -1,0 +1,36 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rider Dashboard - Musika</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body class="bg-cover bg-center" style="background-image: url('assets/food.jpeg');">
+    <div class="bg-black bg-opacity-50 min-h-screen flex flex-col">
+        <header class="flex justify-between items-center p-4">
+            <div class="flex items-center">
+                <img src="assets/logo.png" alt="Musika Logo" class="h-10 mr-4">
+                <span class="text-white text-2xl font-bold">Musika Rider Dashboard</span>
+            </div>
+            <div>
+                <button id="logoutButton" class="text-black bg-white py-2 px-4 rounded-full">Log out</button>
+            </div>
+        </header>
+        <main class="flex-grow flex flex-col justify-center items-center text-center">
+            <h1 class="text-white text-5xl font-bold mb-6">Welcome, Rider!</h1>
+            <div class="flex flex-col space-y-4">
+                <a href="current_rides.html" class="bg-white text-black py-2 px-4 rounded-full">View Current Rides</a>
+                <a href="earnings.html" class="bg-white text-black py-2 px-4 rounded-full">View Earnings</a>
+                <a href="settings.html" class="bg-white text-black py-2 px-4 rounded-full">Settings</a>
+            </div>
+        </main>
+    </div>
+    <script>
+        document.getElementById('logoutButton').addEventListener('click', function() {
+            // Implement logout functionality here
+            alert('Logging out...');
+        });
+    </script>
+</body>
+</html>
