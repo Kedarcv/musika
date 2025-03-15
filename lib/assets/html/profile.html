@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;">
+    <title>Musika Zw - Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="js/api.js"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <a href="index.html" class="flex items-center">
+                    <img src="logo.jpeg" alt="Musika Logo" class="h-10 w-10 rounded-full mr-4">
+                    <span class="text-xl font-semibold">Musika</span>
+                </a>
+                <button id="logoutButton" class="text-black hover:text-gray-600">
+                    <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Profile Content -->
+    <div class="container mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Profile Information -->
+            <div class="col-span-1">
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="text-center mb-6">
+                        <div class="w-24 h-24 rounded-full bg-gray-200 mx-auto mb-4 flex items-center justify-center">
+                            <i class="fas fa-user text-4xl text-gray-400"></i>
+                        </div>
+                        <h2 id="userName" class="text-xl font-semibold"></h2>
+                        <p id="userEmail" class="text-gray-600"></p>
+                    </div>
+                    <div class="space-y-4">
+                        <button id="editProfileButton" class="w-full py-2 px-4 border border-black text-black rounded hover:bg-black hover:text-white transition">
+                            Edit Profile
+                        </button>
+                        <button id="changePasswordButton" class="w-full py-2 px-4 border border-black text-black rounded hover:bg-black hover:text-white transition">
+                            Change Password
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Saved Addresses -->
+                <div class="bg-white rounded-lg shadow p-6 mt-6">
+                    <h3 class="text-lg font-semibold mb-4">Saved Addresses</h3>
+                    <div id="addressList" class="space-y-4">
+                        <!-- Addresses will be populated here -->
+                    </div>
+                    <button id="addAddressButton" class="w-full mt-4 py-2 px-4 border border-black text-black rounded hover:bg-black hover:text-white transition">
+                        Add New Address
+                    </button>
+                </div>
+            </div>
+
+            <!-- Order History -->
+            <div class="col-span-2">
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-semibold mb-4">Order History</h3>
+                    <div id="orderHistory" class="space-y-4">
+                        <!-- Orders will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="editProfileModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden">
+        <div class="flex items-center justify-center min-h-screen">
+            <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+                <h3 class="text-lg font-semibold mb-4">Edit Profile</h3>
+                <form id="editProfileForm">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Name</label>
+                            <input type="text" id="editName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Phone</label>
+                            <input type="tel" id="editPhone" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black">
+                        </div>
+                    </div>
+                    <div class="mt-6 flex justify-end space-x-3">
+                        <button type="button" class="closeModal py-2 px-4 border border-gray-300 rounded text-gray-700 hover:bg-gray-50">
+                            Cancel
+                        </button>
+                        <button type="submit" class="py-2 px-4 bg-black text-white rounded hover:bg-gray-800">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div id="changePasswordModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden">
+        <div class="flex items-center justify-center min-h-screen">
+            <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+                <h3 class="text-lg font-semibold mb-4">Change Password</h3>
+                <form id="changePasswordForm">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Current Password</label>
+                            <input type="password" id="currentPassword" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">New Password</label>
+                            <input type="password" id="newPassword" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Confirm New Password</label>
+                            <input type="password" id="confirmNewPassword" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black">
+                        </div>
+                    </div>
+                    <div class="mt-6 flex justify-end space-x-3">
+                        <button type="button" class="closeModal py-2 px-4 border border-gray-300 rounded text-gray-700 hover:bg-gray-50">
+                            Cancel
+                        </button>
+                        <button type="submit" class="py-2 px-4 bg-black text-white rounded hover:bg-gray-800">
+                            Update Password
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const api = new MusikaAPI();
+        let userData = null;
+
+        // Check authentication
+        if (!localStorage.getItem('token')) {
+            window.location.href = 'login.html';
+        }
+
+        // Load user data
+        async function loadUserData() {
+            try {
+                userData = await api.getUserProfile();
+                document.getElementById('userName').textContent = userData.name;
+                document.getElementById('userEmail').textContent = userData.email;
+                
+                // Load addresses
+                const addresses = await api.getAddresses();
+                const addressList = document.getElementById('addressList');
+                addressList.innerHTML = addresses.map(address => `
+                    <div class="flex justify-between items-center p-3 border rounded">
+                        <div>
+                            <p class="font-medium">${address.name}</p>
+                            <p class="text-sm text-gray-600">${address.address}</p>
+                        </div>
+                        <button class="text-red-600 hover:text-red-800" onclick="deleteAddress('${address.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `).join('');
+
+                // Load orders
+                const orders = await api.getOrders();
+                const orderHistory = document.getElementById('orderHistory');
+                orderHistory.innerHTML = orders.map(order => `
+                    <div class="border rounded p-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-medium">Order #${order.id}</span>
+                            <span class="text-sm ${order.status === 'delivered' ? 'text-green-600' : 'text-blue-600'}">
+                                ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                            </span>
+                        </div>
+                        <div class="text-sm text-gray-600">
+                            <p>${order.restaurant_name}</p>
+                            <p>${new Date(order.created_at).toLocaleDateString()}</p>
+                            <p>Total: $${order.total.toFixed(2)}</p>
+                        </div>
+                        <div class="mt-2">
+                            <a href="order-tracking.html?id=${order.id}" class="text-black hover:text-gray-600 text-sm">
+                                View Details <i class="fas fa-chevron-right ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                alert('Failed to load user data. Please try again.');
+            }
+        }
+
+        // Modal handling
+        function showModal(modalId) {
+            document.getElementById(modalId).classList.remove('hidden');
+        }
+
+        function hideModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        // Event listeners
+        document.getElementById('logoutButton').addEventListener('click', () => {
+            api.logout();
+            window.location.href = 'index.html';
+        });
+
+        document.getElementById('editProfileButton').addEventListener('click', () => {
+            document.getElementById('editName').value = userData.name;
+            document.getElementById('editPhone').value = userData.phone;
+            showModal('editProfileModal');
+        });
+
+        document.getElementById('changePasswordButton').addEventListener('click', () => {
+            showModal('changePasswordModal');
+        });
+
+        document.querySelectorAll('.closeModal').forEach(button => {
+            button.addEventListener('click', () => {
+                hideModal('editProfileModal');
+                hideModal('changePasswordModal');
+            });
+        });
+
+        document.getElementById('editProfileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                await api.updateProfile({
+                    name: document.getElementById('editName').value,
+                    phone: document.getElementById('editPhone').value
+                });
+                hideModal('editProfileModal');
+                loadUserData();
+            } catch (error) {
+                alert('Failed to update profile. Please try again.');
+            }
+        });
+
+        document.getElementById('changePasswordForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmNewPassword').value;
+
+            if (newPassword !== confirmPassword) {
+                alert('New passwords do not match');
+                return;
+            }
+
+            try {
+                await api.changePassword(
+                    document.getElementById('currentPassword').value,
+                    newPassword
+                );
+                hideModal('changePasswordModal');
+                alert('Password updated successfully');
+            } catch (error) {
+                alert('Failed to update password. Please check your current password and try again.');
+            }
+        });
+
+        // Initialize
+        loadUserData();
+    </script>
+</body>
+</html>

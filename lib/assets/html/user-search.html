@@ -3,168 +3,474 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Search - Musika</title>
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://maps.googleapis.com https://cdn.tailwindcss.com https://cdnjs.cloudflare.com; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' https://maps.googleapis.com https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;">
+    <title>Musika Zw - Search Restaurants</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1IiwBut2vPRatOTrZ8jDbYogAxTKXT5Q&libraries=places"></script>
-    <style>
-        /* Popup styles */
-        .popup {
-            display: none;
-            position: absolute;
-            background-color: white;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            padding: 10px;
-            z-index: 1000;
-        }
-        .hidden {
-            display: none;
-        }
-    </style>
+    <script src="js/location.js"></script>
+    <script src="js/api.js"></script>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
-<body class="bg-cover bg-center">
-    <img src="cart.jpeg" alt="Background Image" class="absolute inset-0 w-full h-full object-cover z-0"> <!-- Added image as background -->
-    <div class="bg-black bg-opacity-50 min-h-screen flex flex-col relative z-10">
-    <header class="flex justify-between items-center p-4 bg-white shadow">
-        <div class="flex items-center">
-            <img src="logo.jpeg" alt="Musika Logo" class="h-10 mr-4">
-            <span class="text-2xl font-bold">Musika</span>
-        </div>
-        <div class="flex items-center">
-            <button id="profileButton" class="text-black bg-white py-2 px-4 rounded-full">
-                <i class="fas fa-user"></i> User Profile
-            </button>
-            <button id="cartButton" class="text-black bg-white py-2 px-4 rounded-full ml-4">
-                <i class="fas fa-shopping-cart"></i> Cart
-            </button>
-            <div id="popup" class="popup">
-                <p><a href="#" id="dashboardLink">Dashboard</a></p>
-                <p><a href="#" id="cartLink">Cart</a></p>
-                <p><a href="#" id="logoutLink">Logout</a></p>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <a href="index.html">
+                        <img src="logo.jpeg" alt="Musika Logo" class="h-10 w-10 rounded-full mr-4">
+                    </a>
+                    <div class="relative">
+                        <input type="text" id="locationInput" 
+                            class="w-72 py-2 pl-10 pr-4 border border-gray-300 rounded-full focus:outline-none focus:border-black"
+                            placeholder="Delivery location">
+                        <i class="fas fa-map-marker-alt absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="cart.html" class="relative">
+                        <i class="fas fa-shopping-cart text-xl"></i>
+                        <span id="cartCount" class="absolute -top-2 -right-2 bg-black text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                    </a>
+                    <div class="relative">
+                        <button id="userMenuBtn" class="flex items-center space-x-2">
+                            <i class="fas fa-user-circle text-2xl"></i>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div id="userMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2">
+                            <a href="order-history.html" class="block px-4 py-2 hover:bg-gray-100">
+                                <i class="fas fa-history mr-2"></i>Order History
+                            </a>
+                            <a href="#" class="block px-4 py-2 hover:bg-gray-100">
+                                <i class="fas fa-heart mr-2"></i>Favorites
+                            </a>
+                            <a href="#" class="block px-4 py-2 hover:bg-gray-100">
+                                <i class="fas fa-cog mr-2"></i>Settings
+                            </a>
+                            <hr class="my-2">
+                            <a href="#" class="block px-4 py-2 hover:bg-gray-100 text-red-600">
+                                <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </header>
+    </nav>
 
-    <main class="flex-grow flex flex-col justify-center items-center text-center p-4">
-        <h1 class="text-3xl font-bold mb-4">Order delivery near you</h1>
-        <div class="flex items-center bg-white rounded-full overflow-hidden shadow-lg w-11/12 max-w-2xl">
-            <div class="flex items-center px-4">
-                <i class="fas fa-map-marker-alt text-gray-500"></i>
-                <input type="text" id="foodSearchContainer" placeholder="Search cuisines here..." class="flex-grow py-4 px-2 text-lg outline-none">
-            </div>
-            <div class="flex items-center border-l border-gray-300 px-4">
-                <i class="fas fa-clock text-gray-500"></i>
-                <select id="deliveryTime" class="text-lg outline-none">
-                    <option>Deliver now</option>
-                    <option>Schedule for later</option>
-                </select>
-            </div>
-            <button id="searchButton" class="bg-black text-white py-4 px-6 text-lg">Search</button>
-        </div>
+    <!-- Search and Filters -->
+    <div class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex flex-wrap items-center gap-4">
+                <!-- Search -->
+                <div class="relative flex-1 min-w-[200px]">
+                    <input type="text" id="searchInput" 
+                        class="w-full py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:outline-none focus:border-black"
+                        placeholder="Search restaurants or cuisines">
+                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                </div>
 
-        <!-- Filters Section -->
-        <div class="mt-4">
-            <h2 class="text-xl font-bold">Filters</h2>
-            <div class="flex space-x-4">
-                <select id="cuisineFilter" class="border border-gray-300 p-2 rounded">
-                    <option value="">All Cuisines</option>
-                    <option value="Italian">Italian</option>
-                    <option value="Chinese">Chinese</option>
-                    <option value="Japanese">Japanese</option>
-                </select>
-                <select id="priceFilter" class="border border-gray-300 p-2 rounded">
-                    <option value="">All Prices</option>
-                    <option value="1"></option>
-                    <option value="2"></option>
-                    <option value="3"></option>
-                </select>
+                <!-- Sort -->
+                <div class="relative">
+                    <select id="sortSelect" 
+                        class="appearance-none py-2 pl-4 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:border-black bg-white">
+                        <option value="rating">Rating</option>
+                        <option value="deliveryTime">Delivery Time</option>
+                        <option value="price">Price</option>
+                    </select>
+                    <i class="fas fa-chevron-down absolute right-3 top-3 text-gray-400 pointer-events-none"></i>
+                </div>
+
+                <!-- Filters -->
+                <div class="flex items-center space-x-4">
+                    <label class="flex items-center space-x-2 cursor-pointer">
+                        <input type="checkbox" id="vegetarianFilter" class="hidden">
+                        <span class="inline-block px-3 py-1 rounded-full border border-gray-300 hover:border-black transition-colors">
+                            <i class="fas fa-leaf mr-1"></i>Vegetarian
+                        </span>
+                    </label>
+                    <label class="flex items-center space-x-2 cursor-pointer">
+                        <input type="checkbox" id="veganFilter" class="hidden">
+                        <span class="inline-block px-3 py-1 rounded-full border border-gray-300 hover:border-black transition-colors">
+                            <i class="fas fa-seedling mr-1"></i>Vegan
+                        </span>
+                    </label>
+                    <label class="flex items-center space-x-2 cursor-pointer">
+                        <input type="checkbox" id="halalFilter" class="hidden">
+                        <span class="inline-block px-3 py-1 rounded-full border border-gray-300 hover:border-black transition-colors">
+                            <i class="fas fa-moon mr-1"></i>Halal
+                        </span>
+                    </label>
+                </div>
             </div>
         </div>
+    </div>
 
-        <!-- Hidden search bar for food items -->
-        <div id="foodSearchContainer" class="hidden mt-4">
-            <input type="text" id="foodSearch" placeholder="Search for food..." class="border border-gray-300 p-2 rounded w-11/12 max-w-2xl">
-            <div id="foodSuggestions" class="suggestions-dropdown"></div>
-        </div>
-
-        <!-- Featured Food Items Section -->
-        <h2 class="text-2xl font-bold mt-8">Featured Food Items</h2>
-        <div id="featuredItems" class="flex flex-wrap justify-center mt-4">
-            <div class="border border-gray-300 rounded-lg p-4 m-2">
-                <h3 class="font-bold">Pizza</h3>
-                <p>$10.00</p>
-                <button class="bg-black text-white py-2 px-4 mt-2" onclick="addToCart('Pizza', 'Pizza Place', '$10.00')">Add to Cart</button>
-                <button class="bg-gray-300 text-black py-2 px-4 mt-2" onclick="viewRestaurant('Pizza Place')">View Restaurant</button>
-            </div>
-            <div class="border border-gray-300 rounded-lg p-4 m-2">
-                <h3 class="font-bold">Burger</h3>
-                <p>$8.00</p>
-                <button class="bg-black text-white py-2 px-4 mt-2" onclick="addToCart('Burger', 'Burger Joint', '$8.00')">Add to Cart</button>
-                <button class="bg-gray-300 text-black py-2 px-4 mt-2" onclick="viewRestaurant('Burger Joint')">View Restaurant</button>
-            </div>
-            <div class="border border-gray-300 rounded-lg p-4 m-2">
-                <h3 class="font-bold">Sushi</h3>
-                <p>$12.00</p>
-                <button class="bg-black text-white py-2 px-4 mt-2" onclick="addToCart('Sushi', 'Sushi Place', '$12.00')">Add to Cart</button>
-                <button class="bg-gray-300 text-black py-2 px-4 mt-2" onclick="viewRestaurant('Sushi Place')">View Restaurant</button>
-            </div>
+    <!-- Restaurants Grid -->
+    <main class="container mx-auto px-4 py-8">
+        <div id="restaurantsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Restaurants will be added here dynamically -->
         </div>
     </main>
 
+    <!-- Map Modal -->
+    <div id="mapModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-3xl mx-4">
+            <div class="flex justify-between items-start mb-4">
+                <h3 class="text-xl font-semibold">Select Delivery Location</h3>
+                <button onclick="closeMapModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="map" class="h-96 w-full mb-4 rounded-lg"></div>
+            <button onclick="confirmLocation()" 
+                class="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-900">
+                Confirm Location
+            </button>
+        </div>
+    </div>
+
+    <!-- Saved Addresses Modal -->
+    <div id="addressesModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <div class="flex justify-between items-start mb-4">
+                <h3 class="text-xl font-semibold">Saved Addresses</h3>
+                <button onclick="closeAddressesModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="addressesList" class="space-y-4 mb-6">
+                <!-- Addresses will be added here dynamically -->
+            </div>
+            <button onclick="showMapModal()" class="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-900">
+                Add New Address
+            </button>
+        </div>
+    </div>
+
     <script>
-        // Show user location
-        function showLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(position => {
-                    const locationDiv = document.getElementById('location');
-                    locationDiv.innerHTML = `Your location: Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`;
+        let locationManager;
+        const api = new MusikaAPI();
+        let currentLocation = null;
+        let currentFilters = {
+            search: '',
+            sort: 'rating',
+            dietary: {
+                vegetarian: false,
+                vegan: false,
+                halal: false
+            }
+        };
+
+        // Check authentication
+        if (!localStorage.getItem('token')) {
+            const returnUrl = encodeURIComponent(window.location.href);
+            window.location.href = `login.html?return=${returnUrl}`;
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Initialize location manager
+                locationManager = new LocationManager();
+                
+                // Setup user menu toggle
+                const userMenuBtn = document.getElementById('userMenuBtn');
+                const userMenu = document.getElementById('userMenu');
+                
+                userMenuBtn.addEventListener('click', () => {
+                    userMenu.classList.toggle('hidden');
                 });
-            } else {
-                alert("Geolocation is not supported by this browser.");
+
+                // Close user menu when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('#userMenuBtn') && !e.target.closest('#userMenu')) {
+                        userMenu.classList.add('hidden');
+                    }
+                });
+
+                // Setup location input
+                const locationInput = document.getElementById('locationInput');
+                locationInput.addEventListener('click', showAddressesModal);
+
+                // Setup search input with debounce
+                const searchInput = document.getElementById('searchInput');
+                searchInput.addEventListener('input', debounce(async (e) => {
+                    currentFilters.search = e.target.value.toLowerCase();
+                    await loadRestaurants();
+                }, 300));
+
+                // Setup sort select
+                const sortSelect = document.getElementById('sortSelect');
+                sortSelect.addEventListener('change', async (e) => {
+                    currentFilters.sort = e.target.value;
+                    await loadRestaurants();
+                });
+
+                // Setup filters
+                setupFilters();
+
+                // Get location from URL parameters
+                const urlParams = new URLSearchParams(window.location.search);
+                const address = urlParams.get('address');
+                const lat = urlParams.get('lat');
+                const lng = urlParams.get('lng');
+
+                if (lat && lng) {
+                    currentLocation = { 
+                        lat: parseFloat(lat), 
+                        lng: parseFloat(lng),
+                        address: decodeURIComponent(address || '')
+                    };
+                    locationInput.value = currentLocation.address;
+                    await loadRestaurants();
+                } else {
+                    // Try to get last saved location
+                    const lastLocation = locationManager.getLastLocation();
+                    if (lastLocation) {
+                        currentLocation = lastLocation;
+                        locationInput.value = lastLocation.address;
+                        await loadRestaurants();
+                    } else {
+                        showAddressesModal();
+                    }
+                }
+
+                // Update cart count
+                updateCartCount();
+
+                // Setup logout
+                document.querySelector('a[href="#"].text-red-600').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    api.logout();
+                    window.location.href = 'index.html';
+                });
+
+            } catch (error) {
+                console.error('Error initializing page:', error);
+                alert('Failed to load the page. Please refresh and try again.');
+            }
+        });
+
+        function setupFilters() {
+            const filters = ['vegetarian', 'vegan', 'halal'];
+            filters.forEach(filter => {
+                const checkbox = document.getElementById(`${filter}Filter`);
+                const label = checkbox.nextElementSibling;
+                
+                checkbox.addEventListener('change', async (e) => {
+                    currentFilters.dietary[filter] = e.target.checked;
+                    label.classList.toggle('border-black', e.target.checked);
+                    label.classList.toggle('bg-black', e.target.checked);
+                    label.classList.toggle('text-white', e.target.checked);
+                    await loadRestaurants();
+                });
+            });
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        async function loadRestaurants() {
+            try {
+                if (!currentLocation) return;
+
+                const restaurants = await api.getRestaurants({
+                    lat: currentLocation.lat,
+                    lng: currentLocation.lng
+                });
+
+                // Apply filters
+                let filteredRestaurants = restaurants.filter(restaurant => {
+                    if (currentFilters.search) {
+                        const searchTerm = currentFilters.search.toLowerCase();
+                        if (!restaurant.name.toLowerCase().includes(searchTerm) &&
+                            !restaurant.cuisine_type.toLowerCase().includes(searchTerm)) {
+                            return false;
+                        }
+                    }
+
+                    // Apply dietary filters
+                    if (currentFilters.dietary.vegetarian && !restaurant.is_vegetarian) return false;
+                    if (currentFilters.dietary.vegan && !restaurant.is_vegan) return false;
+                    if (currentFilters.dietary.halal && !restaurant.is_halal) return false;
+
+                    return true;
+                });
+
+                // Apply sorting
+                filteredRestaurants.sort((a, b) => {
+                    switch (currentFilters.sort) {
+                        case 'rating':
+                            return b.rating - a.rating;
+                        case 'deliveryTime':
+                            return a.delivery_time - b.delivery_time;
+                        case 'price':
+                            return a.price_level - b.price_level;
+                        default:
+                            return 0;
+                    }
+                });
+
+                displayRestaurants(filteredRestaurants);
+            } catch (error) {
+                console.error('Error loading restaurants:', error);
+                alert('Failed to load restaurants. Please try again.');
             }
         }
 
-        // Show popup menu
-        document.getElementById('profileButton').addEventListener('click', function() {
-            const popup = document.getElementById('popup');
-            popup.style.display = popup.style.display === 'block' ? 'none' : 'block';
-        });
-
-        // Event listeners for popup options
-        document.getElementById('logoutLink').addEventListener('click', function() {
-            alert('Logging out...');
-            // Implement logout functionality here
-        });
-
-        document.getElementById('dashboardLink').addEventListener('click', function() {
-            window.location.href = 'user_dashboard.html'; // Redirect to dashboard
-        });
-
-        document.getElementById('cartLink').addEventListener('click', function() {
-            window.location.href = 'cart.html'; // Redirect to cart
-        });
-
-        // Show user location on page load
-        showLocation();
-
-        // Show food search bar when the search button is clicked
-        document.getElementById('searchButton').addEventListener('click', function() {
-            const foodSearchContainer = document.getElementById('foodSearchContainer');
-            foodSearchContainer.classList.toggle('hidden'); // Toggle visibility of the food search bar
-        });
-
-        // Function to add food to cart
-        function addToCart(food, restaurant, price) {
-            const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            cart.push({ food, restaurant, price });
-            localStorage.setItem('cart', JSON.stringify(cart));
-            alert(`${food} has been added to your cart.`);
+        function displayRestaurants(restaurants) {
+            const grid = document.getElementById('restaurantsGrid');
+            grid.innerHTML = restaurants.map(restaurant => `
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <img src="${restaurant.image_url}" alt="${restaurant.name}" 
+                        class="w-full h-48 object-cover">
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-lg font-semibold">${restaurant.name}</h3>
+                            <button onclick="toggleFavorite(${restaurant.id})" class="text-gray-400 hover:text-red-500">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-2">${restaurant.cuisine_type}</p>
+                        <div class="flex items-center mb-2">
+                            <div class="text-yellow-400 mr-1">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span class="text-gray-700">${restaurant.rating.toFixed(1)}</span>
+                            <span class="mx-2">•</span>
+                            <span class="text-gray-600">${restaurant.distance}km away</span>
+                        </div>
+                        <a href="restaurant.html?id=${restaurant.id}" 
+                            class="block w-full text-center bg-black text-white py-2 rounded-lg hover:bg-gray-800 transition">
+                            View Menu
+                        </a>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        // Function to view restaurant
-        function viewRestaurant(restaurant) {
-            window.location.href = `restaurant.html?name=${restaurant}`; // Redirect to restaurant page
+        async function loadSavedAddresses() {
+            try {
+                const addresses = await api.getAddresses();
+                const addressesList = document.getElementById('addressesList');
+                
+                if (addresses.length === 0) {
+                    addressesList.innerHTML = `
+                        <div class="text-center text-gray-500">
+                            <p>No saved addresses</p>
+                            <p class="text-sm">Add a new address to get started</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                addressesList.innerHTML = addresses.map(address => `
+                    <div class="flex items-center justify-between p-3 border rounded hover:border-black cursor-pointer"
+                        onclick="selectAddress(${JSON.stringify(address).replace(/"/g, '&quot;')})">
+                        <div>
+                            <p class="font-medium">${address.name}</p>
+                            <p class="text-sm text-gray-600">${address.address}</p>
+                        </div>
+                        ${address.is_default ? '<span class="text-xs bg-black text-white px-2 py-1 rounded">Default</span>' : ''}
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading addresses:', error);
+                alert('Failed to load saved addresses. Please try again.');
+            }
+        }
+
+        function showAddressesModal() {
+            document.getElementById('addressesModal').classList.remove('hidden');
+            loadSavedAddresses();
+        }
+
+        function closeAddressesModal() {
+            document.getElementById('addressesModal').classList.add('hidden');
+        }
+
+        function showMapModal() {
+            closeAddressesModal();
+            document.getElementById('mapModal').classList.remove('hidden');
+            locationManager.init('map', false, onLocationSelected);
+        }
+
+        function closeMapModal() {
+            document.getElementById('mapModal').classList.add('hidden');
+        }
+
+        function selectAddress(address) {
+            currentLocation = address;
+            document.getElementById('locationInput').value = address.address;
+            closeAddressesModal();
+            loadRestaurants();
+        }
+
+        async function confirmLocation() {
+            try {
+                const location = locationManager.currentLocation;
+                if (!location) {
+                    alert('Please select a location on the map');
+                    return;
+                }
+
+                // Save address
+                const response = await api.saveAddress({
+                    name: 'Custom Address',
+                    address: location.address,
+                    lat: location.lat,
+                    lng: location.lng
+                });
+
+                currentLocation = location;
+                document.getElementById('locationInput').value = location.address;
+                closeMapModal();
+                await loadRestaurants();
+            } catch (error) {
+                console.error('Error saving address:', error);
+                alert('Failed to save address. Please try again.');
+            }
+        }
+
+        function onLocationSelected(location) {
+            if (location) {
+                currentLocation = location;
+                document.getElementById('locationInput').value = location.address;
+            }
+        }
+
+        async function toggleFavorite(restaurantId) {
+            try {
+                await api.toggleFavorite(restaurantId);
+                // Update UI
+                const button = event.target.closest('button');
+                button.classList.toggle('text-red-500');
+                button.classList.toggle('text-gray-400');
+            } catch (error) {
+                console.error('Error toggling favorite:', error);
+                alert('Failed to update favorite. Please try again.');
+            }
+        }
+
+        async function updateCartCount() {
+            try {
+                const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+                document.getElementById('cartCount').textContent = cart.length;
+            } catch (error) {
+                console.error('Error updating cart count:', error);
+            }
         }
     </script>
 </body>

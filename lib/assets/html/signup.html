@@ -1,81 +1,168 @@
-<html>
- <head>
-  <title>
-   Musika Signup
-  </title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
- </head>
- <body class="bg-white flex items-center justify-center min-h-screen">
-  <div class="w-full max-w-md mx-auto p-4">
-   <div class="text-center mb-8">
-    <img alt="Musika Logo" class="mx-auto mb-4" height="50" src="logo.jpeg" width="150"/>
-   </div>
-   <div class="bg-white p-8 rounded-lg shadow-md">
-    <h2 class="text-xl font-semibold mb-4">
-     What's your phone number or email?
-    </h2>
-    <input id="loginInput" class="w-full p-3 mb-4 border border-gray-300 rounded-lg" placeholder="Enter phone number or email" type="text"/>
-    <button id="loginButton" class="w-full bg-black text-white p-3 rounded-lg mb-4">
-     Continue
-    </button>
-    <div class="flex items-center justify-center mb-4">
-     <hr class="w-full border-gray-300"/>
-     <span class="px-2 text-gray-500">
-      or
-     </span>
-     <hr class="w-full border-gray-300"/>
-    </div>
-    <button class="w-full bg-gray-100 text-gray-700 p-3 rounded-lg mb-4 flex items-center justify-center">
-     <i class="fab fa-google mr-2"></i>
-     Continue with Google
-    </button>
-    <button class="w-full bg-gray-100 text-gray-700 p-3 rounded-lg mb-4 flex items-center justify-center">
-     <i class="fab fa-apple mr-2"></i>
-     Continue with Apple
-    </button>
-    <div class="flex items-center justify-center mb-4">
-     <hr class="w-full border-gray-300"/>
-     <span class="px-2 text-gray-500">
-      or
-     </span>
-     <hr class="w-full border-gray-300"/>
-    </div>
-    <button class="w-full bg-gray-100 text-gray-700 p-3 rounded-lg flex items-center justify-center">
-     <i class="fas fa-qrcode mr-2"></i>
-     Log in with QR code
-    </button>
-    <p class="text-xs text-gray-500 mt-4">
-     By proceeding, you consent to get calls, WhatsApp or SMS/RCS messages, including by automated means, from Musika and its affiliates to the number provided.
-    </p>
-   </div>
-  </div>
-  <script>
-      document.getElementById('loginButton').addEventListener('click', async function() {
-          const input = document.getElementById('loginInput').value;
-          if (input) {
-              try {
-                  const response = await fetch('/api/login', {
-                      method: 'POST',
-                      headers: {
-                          'Content-Type': 'application/json',
-                      },
-                      body: JSON.stringify({ email: input, password: 'placeholderPassword' }), // Placeholder password
-                  });
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;">
+    <title>Musika Zw - Sign Up</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="js/api.js"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <a href="index.html" class="flex items-center">
+                    <img src="logo.jpeg" alt="Musika Logo" class="h-10 w-10 rounded-full mr-4">
+                    <span class="text-xl font-semibold">Musika</span>
+                </a>
+            </div>
+        </div>
+    </nav>
 
-                  if (!response.ok) {
-                      throw new Error('Network response was not ok');
-                  }
+    <!-- Signup Form -->
+    <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-lg">
+            <div>
+                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Create your account</h2>
+                <p class="mt-2 text-center text-sm text-gray-600">
+                    Already have an account?
+                    <a href="login.html" class="font-medium text-black hover:text-gray-800">
+                        Sign in
+                    </a>
+                </p>
+            </div>
+            <form class="mt-8 space-y-6" id="signupForm">
+                <div class="rounded-md shadow-sm -space-y-px">
+                    <div>
+                        <label for="name" class="sr-only">Full name</label>
+                        <input id="name" name="name" type="text" required
+                            class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-black focus:border-black focus:z-10 sm:text-sm"
+                            placeholder="Full name">
+                    </div>
+                    <div>
+                        <label for="email" class="sr-only">Email address</label>
+                        <input id="email" name="email" type="email" required
+                            class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-black focus:border-black focus:z-10 sm:text-sm"
+                            placeholder="Email address">
+                    </div>
+                    <div>
+                        <label for="phone" class="sr-only">Phone number</label>
+                        <input id="phone" name="phone" type="tel" required
+                            class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-black focus:border-black focus:z-10 sm:text-sm"
+                            placeholder="Phone number">
+                    </div>
+                    <div>
+                        <label for="password" class="sr-only">Password</label>
+                        <input id="password" name="password" type="password" required
+                            class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-black focus:border-black focus:z-10 sm:text-sm"
+                            placeholder="Password">
+                    </div>
+                    <div>
+                        <label for="confirm-password" class="sr-only">Confirm password</label>
+                        <input id="confirm-password" name="confirm-password" type="password" required
+                            class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-black focus:border-black focus:z-10 sm:text-sm"
+                            placeholder="Confirm password">
+                    </div>
+                </div>
 
-                  const data = await response.json();
-                  console.log(data); // Handle the login response from the backend
-              } catch (error) {
-                  console.error('Error logging in:', error);
-              }
-          } else {
-              alert('Please enter your phone number or email.');
-          }
-      });
-  </script>
- </body>
+                <div class="flex items-center">
+                    <input id="terms" name="terms" type="checkbox" required
+                        class="h-4 w-4 text-black focus:ring-black border-gray-300 rounded">
+                    <label for="terms" class="ml-2 block text-sm text-gray-900">
+                        I agree to the
+                        <a href="#" class="font-medium text-black hover:text-gray-800">Terms of Service</a>
+                        and
+                        <a href="#" class="font-medium text-black hover:text-gray-800">Privacy Policy</a>
+                    </label>
+                </div>
+
+                <div>
+                    <button type="submit"
+                        class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-black hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black">
+                        <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                            <i class="fas fa-user-plus"></i>
+                        </span>
+                        Create Account
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const api = new MusikaAPI();
+        const signupForm = document.getElementById('signupForm');
+        const urlParams = new URLSearchParams(window.location.search);
+        const returnUrl = urlParams.get('return') || 'index.html';
+
+        // Password validation
+        function validatePassword(password) {
+            const minLength = 8;
+            const hasUpperCase = /[A-Z]/.test(password);
+            const hasLowerCase = /[a-z]/.test(password);
+            const hasNumbers = /\d/.test(password);
+            const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+            const errors = [];
+            if (password.length < minLength) errors.push(`Password must be at least ${minLength} characters long`);
+            if (!hasUpperCase) errors.push('Password must contain at least one uppercase letter');
+            if (!hasLowerCase) errors.push('Password must contain at least one lowercase letter');
+            if (!hasNumbers) errors.push('Password must contain at least one number');
+            if (!hasSpecialChar) errors.push('Password must contain at least one special character');
+
+            return errors;
+        }
+
+        // Phone number validation
+        function validatePhone(phone) {
+            const phoneRegex = /^(\+263|0)7[7-8][0-9]{7}$/;
+            return phoneRegex.test(phone);
+        }
+
+        signupForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            
+            // Validate password
+            const passwordErrors = validatePassword(password);
+            if (passwordErrors.length > 0) {
+                alert(passwordErrors.join('\n'));
+                return;
+            }
+
+            // Validate phone number
+            if (!validatePhone(phone)) {
+                alert('Please enter a valid Zimbabwean phone number (e.g., 0771234567 or +263771234567)');
+                return;
+            }
+
+            // Check if passwords match
+            if (password !== confirmPassword) {
+                alert('Passwords do not match');
+                return;
+            }
+            
+            try {
+                const response = await api.register(name, email, password, phone);
+                window.location.href = returnUrl;
+            } catch (error) {
+                if (error.message.includes('Email already exists')) {
+                    alert('This email is already registered. Please sign in or use a different email.');
+                } else {
+                    alert('An error occurred during registration. Please try again.');
+                }
+            }
+        });
+    </script>
+</body>
 </html>

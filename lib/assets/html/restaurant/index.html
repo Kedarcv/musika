@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Musika Restaurant Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen flex">
+        <!-- Sidebar -->
+        <nav class="bg-gray-800 w-64 px-4 py-6">
+            <div class="flex items-center justify-center mb-8">
+                <h1 class="text-white text-2xl font-bold">Restaurant Portal</h1>
+            </div>
+            <ul>
+                <li class="mb-4">
+                    <a href="#" class="flex items-center text-gray-300 hover:text-white">
+                        <i class="fas fa-chart-line mr-3"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="mb-4">
+                    <a href="#" class="flex items-center text-gray-300 hover:text-white">
+                        <i class="fas fa-utensils mr-3"></i>
+                        <span>Menu Items</span>
+                    </a>
+                </li>
+                <li class="mb-4">
+                    <a href="#" class="flex items-center text-gray-300 hover:text-white">
+                        <i class="fas fa-shopping-cart mr-3"></i>
+                        <span>Orders</span>
+                    </a>
+                </li>
+                <li class="mb-4">
+                    <a href="#" class="flex items-center text-gray-300 hover:text-white">
+                        <i class="fas fa-star mr-3"></i>
+                        <span>Reviews</span>
+                    </a>
+                </li>
+                <li class="mb-4">
+                    <a href="#" class="flex items-center text-gray-300 hover:text-white">
+                        <i class="fas fa-cog mr-3"></i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="flex-1 p-8">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold mb-4">Restaurant Overview</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Stats Cards -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 bg-blue-500 rounded-full">
+                                <i class="fas fa-shopping-cart text-white"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-gray-500 text-sm">Today's Orders</h3>
+                                <p class="text-2xl font-bold" id="todayOrders">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 bg-green-500 rounded-full">
+                                <i class="fas fa-utensils text-white"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-gray-500 text-sm">Menu Items</h3>
+                                <p class="text-2xl font-bold" id="menuItems">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 bg-yellow-500 rounded-full">
+                                <i class="fas fa-star text-white"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-gray-500 text-sm">Rating</h3>
+                                <p class="text-2xl font-bold" id="rating">0.0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 bg-red-500 rounded-full">
+                                <i class="fas fa-dollar-sign text-white"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-gray-500 text-sm">Today's Revenue</h3>
+                                <p class="text-2xl font-bold" id="todayRevenue">$0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Orders -->
+            <div class="mb-8">
+                <h3 class="text-lg font-bold mb-4">Active Orders</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="activeOrders">
+                    <!-- Order cards will be populated here -->
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-bold mb-4">Weekly Orders</h3>
+                    <canvas id="weeklyOrdersChart"></canvas>
+                </div>
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-bold mb-4">Popular Items</h3>
+                    <canvas id="popularItemsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Recent Reviews -->
+            <div class="mt-8">
+                <h3 class="text-lg font-bold mb-4">Recent Reviews</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="recentReviews">
+                    <!-- Review cards will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>

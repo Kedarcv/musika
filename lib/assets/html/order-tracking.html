@@ -1,72 +1,46 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order Tracking - Musika</title>
-    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .bottom-nav {
+            display: none; /* Hidden by default */
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: white;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .bottom-nav a {
+            display: inline-block;
+            padding: 10px;
+            color: black;
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .bottom-nav {
+                display: flex; /* Show on mobile */
+            }
+        }
+    </style>
 </head>
 <body>
-    <header class="main-header">
-        <nav class="nav-container">
-            <div class="logo">
-                <h1>Musika</h1>
-            </div>
-            <div class="nav-links">
-                <a href="index.html">Home</a>
-                <a href="login.html">Login</a>
-                <a href="signup.html">Sign Up</a>
-            </div>
-        </nav>
-    </header>
-
-    <main>
-        <section class="order-tracking-section">
-            <h2>Track Your Order</h2>
-            <form id="trackingForm">
-                <div class="form-group">
-                    <label for="orderId">Order ID</label>
-                    <input type="text" id="orderId" class="admin-input" required>
-                </div>
-                <button type="submit" class="admin-btn">Track Order</button>
-            </form>
-            <div id="orderStatus" class="order-status">
-                <h3>Order Status:</h3>
-                <p>Restaurant: <span id="restaurantName"></span></p>
-                <p>Status: <span id="orderStatusText"></span></p>
-            </div>
-        </section>
-    </main>
-
-    <footer class="main-footer">
-        <p>&copy; 2024 Musika. All rights reserved.</p>
-    </footer>
-
-    <script src="js/main.js"></script>
-    <script>
-        document.getElementById('trackingForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const orderId = document.getElementById('orderId').value;
-
-            try {
-                const response = await fetch(`/api/order/${orderId}`);
-                const order = await response.json();
-                const orderStatus = document.getElementById('orderStatus');
-
-                if (response.ok) {
-                    orderStatus.innerHTML = `
-                        <h3>Order Status:</h3>
-                        <p>Restaurant: ${order.restaurantId}</p>
-                        <p>Status: ${order.status}</p>
-                    `;
-                } else {
-                    orderStatus.innerHTML = `<p>${order.message}</p>`;
-                }
-            } catch (error) {
-                console.error('Error fetching order status:', error);
-            }
-        });
-    </script>
+    <div class="container mx-auto">
+        <h1 class="text-2xl font-bold">Order Tracking Page</h1>
+        <!-- Order tracking content goes here -->
+    </div>
+    <div class="bottom-nav">
+        <a href="profile.html">Profile</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="order-tracking.html">Order Tracking</a>
+        <a href="shopping.html">Shopping</a>
+        <a href="cart.html">Cart</a>
+    </div>
 </body>
 </html>

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Musika Zw - Order History</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <a href="index.html">
+                        <img src="logo.jpeg" alt="Musika Logo" class="h-10 w-10 rounded-full mr-4">
+                    </a>
+                    <span class="text-xl font-semibold">Order History</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="cart.html" class="relative">
+                        <i class="fas fa-shopping-cart text-xl"></i>
+                        <span id="cartCount" class="absolute -top-2 -right-2 bg-black text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                    </a>
+                    <div class="relative">
+                        <button id="userMenuBtn" class="flex items-center space-x-2">
+                            <i class="fas fa-user-circle text-2xl"></i>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div id="userMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2">
+                            <a href="#" class="block px-4 py-2 hover:bg-gray-100">
+                                <i class="fas fa-heart mr-2"></i>Favorites
+                            </a>
+                            <a href="#" class="block px-4 py-2 hover:bg-gray-100">
+                                <i class="fas fa-cog mr-2"></i>Settings
+                            </a>
+                            <hr class="my-2">
+                            <a href="#" class="block px-4 py-2 hover:bg-gray-100 text-red-600">
+                                <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Order History Filters -->
+        <div class="flex items-center space-x-4 mb-8">
+            <div class="relative">
+                <input type="text" id="searchOrders" 
+                    class="w-72 py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:outline-none focus:border-black"
+                    placeholder="Search orders...">
+                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+            </div>
+            <select id="timeFilter" class="py-2 px-4 border border-gray-300 rounded-lg focus:outline-none focus:border-black">
+                <option value="all">All Time</option>
+                <option value="week">Past Week</option>
+                <option value="month">Past Month</option>
+                <option value="year">Past Year</option>
+            </select>
+        </div>
+
+        <!-- Orders List -->
+        <div id="ordersList" class="space-y-6">
+            <!-- Orders will be added here dynamically -->
+        </div>
+    </main>
+
+    <script>
+        // Sample order history data
+        const orders = [
+            {
+                id: "ORD123",
+                date: "2025-03-06",
+                restaurant: "Chicken Inn",
+                items: [
+                    { name: "2 Piece Chicken & Chips", quantity: 2, price: 8.99 },
+                    { name: "Coca Cola", quantity: 1, price: 1.99 }
+                ],
+                total: 19.97,
+                status: "Delivered",
+                rating: 5
+            },
+            {
+                id: "ORD122",
+                date: "2025-03-05",
+                restaurant: "Pizza Inn",
+                items: [
+                    { name: "Large Pepperoni Pizza", quantity: 1, price: 15.99 },
+                    { name: "Garlic Bread", quantity: 1, price: 3.99 }
+                ],
+                total: 19.98,
+                status: "Delivered",
+                rating: 4
+            }
+        ];
+
+        function createOrderCard(order) {
+            const orderDate = new Date(order.date).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            return `
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="text-lg font-semibold">${order.restaurant}</h3>
+                            <p class="text-sm text-gray-600">${orderDate}</p>
+                            <p class="text-sm font-medium">Order #${order.id}</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="inline-block px-3 py-1 rounded-full ${
+                                order.status === 'Delivered' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                            }">${order.status}</span>
+                            <p class="text-lg font-semibold mt-2">$${order.total.toFixed(2)}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-2 mb-4">
+                        ${order.items.map(item => `
+                            <div class="flex justify-between text-sm">
+                                <span>${item.quantity}x ${item.name}</span>
+                                <span>$${(item.price * item.quantity).toFixed(2)}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div class="flex items-center justify-between pt-4 border-t">
+                        <div class="flex items-center">
+                            ${[1, 2, 3, 4, 5].map(star => `
+                                <i class="fas fa-star ${star <= order.rating ? 'text-yellow-400' : 'text-gray-300'}"></i>
+                            `).join('')}
+                        </div>
+                        <div class="space-x-2">
+                            <button onclick="viewOrderDetails('${order.id}')" 
+                                class="px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50">
+                                View Details
+                            </button>
+                            <button onclick="reorder('${order.id}')" 
+                                class="px-4 py-2 text-sm bg-black text-white rounded-lg hover:bg-gray-900">
+                                Reorder
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function displayOrders(filteredOrders = orders) {
+            const ordersList = document.getElementById('ordersList');
+            ordersList.innerHTML = filteredOrders.map(order => createOrderCard(order)).join('');
+        }
+
+        function filterOrders() {
+            const searchTerm = document.getElementById('searchOrders').value.toLowerCase();
+            const timeFilter = document.getElementById('timeFilter').value;
+            
+            let filtered = orders.filter(order => {
+                const matchesSearch = order.restaurant.toLowerCase().includes(searchTerm) ||
+                    order.id.toLowerCase().includes(searchTerm) ||
+                    order.items.some(item => item.name.toLowerCase().includes(searchTerm));
+
+                if (timeFilter === 'all') return matchesSearch;
+
+                const orderDate = new Date(order.date);
+                const now = new Date();
+                const diffDays = (now - orderDate) / (1000 * 60 * 60 * 24);
+
+                switch (timeFilter) {
+                    case 'week': return diffDays <= 7 && matchesSearch;
+                    case 'month': return diffDays <= 30 && matchesSearch;
+                    case 'year': return diffDays <= 365 && matchesSearch;
+                    default: return matchesSearch;
+                }
+            });
+
+            displayOrders(filtered);
+        }
+
+        function viewOrderDetails(orderId) {
+            // In a real app, this would open a modal or navigate to a detailed view
+            alert(`Viewing details for order ${orderId}`);
+        }
+
+        function reorder(orderId) {
+            const order = orders.find(o => o.id === orderId);
+            if (order) {
+                // In a real app, this would add all items to cart and redirect to cart page
+                const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+                order.items.forEach(item => {
+                    cart.push({
+                        ...item,
+                        restaurantName: order.restaurant
+                    });
+                });
+                localStorage.setItem('cart', JSON.stringify(cart));
+                window.location.href = 'cart.html';
+            }
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            displayOrders();
+
+            // Add event listeners
+            document.getElementById('searchOrders').addEventListener('input', filterOrders);
+            document.getElementById('timeFilter').addEventListener('change', filterOrders);
+            document.getElementById('userMenuBtn').addEventListener('click', () => {
+                document.getElementById('userMenu').classList.toggle('hidden');
+            });
+
+            // Close user menu when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('#userMenuBtn') && !e.target.closest('#userMenu')) {
+                    document.getElementById('userMenu').classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

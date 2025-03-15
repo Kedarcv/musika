@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map Location Selector</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1IiwBut2vPRatOTrZ8jDbYogAxTKXT5Q" async defer></script>
+    <style>
+        body { background-color: #1a202c; }
+        #map { height: 100vh; width: 100%; display: none; }
+        .floating-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: none;
+        }
+        .coordinates-box {
+            position: absolute;
+            bottom: 80px;
+            left: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            color: white;
+        }
+        .tutorial-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .tutorial-step { display: none; text-align: center; }
+        .tutorial-step.active { display: block; }
+        .tutorial-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="text-white h-screen flex flex-col justify-between">
+    <!-- Tutorial Overlay (Loads First) -->
+    <div class="tutorial-overlay" id="tutorialOverlay">
+        <div class="tutorial-step active" id="step1">
+            <h2>Welcome to the Map Location Selector!</h2>
+            <p>Drag the pin to select your desired location.</p>
+            <button class="tutorial-button" onclick="nextStep(1)">Next</button>
+        </div>
+        <div class="tutorial-step" id="step2">
+            <h2>Confirm Your Location</h2>
+            <p>Click the check button to save your location.</p>
+            <button class="tutorial-button" onclick="nextStep(2)">Next</button>
+        </div>
+        <div class="tutorial-step" id="step3">
+            <h2>You're All Set!</h2>
+            <button class="tutorial-button" onclick="endTutorial()">OK</button>
+        </div>
+    </div>
+
+    <!-- Map & UI Elements (Hidden Initially) -->
+    <div id="map"></div>
+    <div id="coordinates" class="coordinates-box"></div>
+    <button class="floating-button" id="confirmLocationButton">✔</button>
+
+    <script>
+        let map, marker, destinationLocation;
+        let tutorialStep = 0;
+        let tutorialCompleted = false;
+
+        function nextStep(step) {
+            const steps = document.querySelectorAll(".tutorial-step");
+            steps.forEach((s, index) => {
+                s.classList.toggle("active", index === step);
+            });
+            tutorialStep = step;
+        }
+
+        function endTutorial() {
+            document.getElementById("tutorialOverlay").style.display = "none";
+            tutorialCompleted = true;
+            loadMapAfterTutorial();
+        }
+
+        function loadMapAfterTutorial() {
+            document.getElementById("map").style.display = "block";
+            document.getElementById("confirmLocationButton").style.display = "block";
+            initMap();
+        }
+
+        function initMap() {
+            if (!tutorialCompleted) return; // Prevent loading map before tutorial ends
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        loadMap({ lat: position.coords.latitude, lng: position.coords.longitude });
+                    },
+                    () => {
+                        promptForCity();
+                    }
+                );
+            } else {
+                promptForCity();
+            }
+        }
+
+        function promptForCity() {
+            const cityName = prompt("Please enter the city name:");
+            if (cityName) {
+                geocodeCity(cityName);
+            } else {
+                alert("No location provided.");
+            }
+        }
+
+        function geocodeCity(cityName) {
+            const geocoder = new google.maps.Geocoder();
+            geocoder.geocode({ address: cityName }, function (results, status) {
+                if (status === "OK") {
+                    loadMap(results[0].geometry.location);
+                } else {
+                    alert("Geocode was not successful: " + status);
+                }
+            });
+        }
+
+        function loadMap(location) {
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: location,
+                zoom: 12,
+                mapTypeId: "roadmap", // Set map view to "roadmap" (default map view)
+            });
+
+            marker = new google.maps.Marker({
+                position: location,
+                map: map,
+                draggable: true,
+            });
+
+            google.maps.event.addListener(marker, "dragend", function () {
+                updateCoordinates(marker.getPosition());
+            });
+
+            updateCoordinates(location);
+        }
+
+        function updateCoordinates(location) {
+            document.getElementById("coordinates").innerText = `Lat: ${location.lat()}, Lng: ${location.lng()}`;
+        }
+
+        document.getElementById("confirmLocationButton").addEventListener("click", function () {
+            if (marker) {
+                const lat = marker.getPosition().lat();
+                const lng = marker.getPosition().lng();
+                setTimeout(() => {
+                    if (confirm(`Is this the correct location? Lat: ${lat}, Lng: ${lng}`)) {
+                        destinationLocation = { lat, lng };
+                        alert(`Location saved: Lat: ${lat}, Lng: ${lng}`);
+                        window.location.href = `user-search.html?lat=${lat}&lng=${lng}`;
+                    }
+                }, 1000);
+            } else {
+                alert("Please drop a pin first.");
+            }
+        });
+    </script>
+</body>
+</html>

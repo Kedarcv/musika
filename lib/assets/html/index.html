@@ -3,76 +3,300 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Musika Zw</title>
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <title>Musika Zw - Food Delivery</title>
+    
+    <!-- Load critical styles first -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="logo.jpg">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1IiwBut2vPRatOTrZ8jDbYogAxTKXT5Q&libraries=places&callback=initAutocomplete" async defer></script>
-</head>
-<body class="bg-cover bg-center">
-    <img src="food.jpeg" alt="Background Image" class="absolute inset-0 w-full h-full object-cover z-0"> <!-- Added image as background -->
-    <div class="bg-black bg-opacity-50 min-h-screen flex flex-col relative z-10">
-        <header class="flex justify-between items-center p-4">
-            <div class="flex items-center">
-                <img src="logo.jpeg" alt="Musika Logo" class="h-10 mr-4"> <!-- Updated path to the logo -->
-                <span class="text-white text-2xl font-bold">Musika Zw</span>
-            </div>
-            <div>
-                <button id="loginButton" class="text-black bg-white py-2 px-4 rounded-full mr-2">Log in</button>
-                <button id="signupButton" class="text-black bg-white py-2 px-4 rounded-full">Sign up</button>
-            </div>
-        </header>
-        <main class="flex-grow flex flex-col justify-center items-center text-center overflow-hidden">
-            <h1 class="text-white text-5xl font-bold mb-6">Order delivery near you</h1>
-            <div class="flex items-center bg-white rounded-full overflow-hidden shadow-lg w-full max-w-2xl flex-wrap">
-                <div class="flex items-center px-4">
-                    <i class="fas fa-map-marker-alt text-gray-500"></i>
-                    <input type="text" id="deliveryAddress" placeholder="Enter delivery address" class="flex-grow py-4 px-2 text-lg outline-none" onkeyup="filterLocations()">
-                </div>
-                <div class="flex items-center border-l border-gray-300 px-4">
-                    <i class="fas fa-clock text-gray-500"></i>
-                    <select id="deliveryTime" class="text-lg outline-none">
-                        <option>Deliver now</option>
-                        <option>Schedule for later</option>
-                    </select>
-                </div>
-                <button id="searchButton" class="bg-black text-white py-4 px-6 text-lg rounded-full">Select Location</button>
-            </div>
-            <div id="suggestions" class="suggestions-dropdown"></div>
-            <a href="login.html" class="text-white mt-4">Or Sign In</a>
-        </main>
-    </div>
+    
+    <!-- Load API dependencies -->
+    <script src="js/api.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    
+    <!-- Load application scripts -->
+    <script src="js/auth.js"></script>
+    <script src="js/location.js"></script>
+    <script src="js/app.js"></script>
+    
+    <!-- Load Maps API with recommended pattern -->
     <script>
-        let autocomplete;
+        (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.googleapis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
+            key: "AIzaSyB1IiwBut2vPRatOTrZ8jDbYogAxTKXT5Q",
+            v: "weekly"
+        });
+    </script>
+    
+    <style>
+        .suggestions-dropdown {
+            @apply bg-white rounded-lg shadow-lg mt-2 max-w-2xl w-full absolute z-50;
+        }
+        .suggestion-item {
+            @apply p-3 hover:bg-gray-100 cursor-pointer;
+        }
+        .hero-gradient {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7));
+        }
+        #map {
+            height: 300px;
+            width: 100%;
+            border-radius: 8px;
+            margin-top: 16px;
+        }   
+        .floating-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="relative">
+        <!-- Hero Section -->
+        <div class="relative h-[600px]">
+            <img src="food.jpeg" alt="Background Image" class="absolute inset-0 w-full h-full object-cover">
+            <div class="hero-gradient absolute inset-0"></div>
+            <div class="relative z-10">
+                <!-- Navigation -->
+                <nav class="container mx-auto px-4 py-6 flex justify-between items-center">
+                    <div class="flex items-center">
+                        <img src="logo.jpeg" alt="Musika Logo" class="h-12 w-12 rounded-full mr-4">
+                        <span class="text-white text-3xl font-bold">Musika Zw</span>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button id="loginButton" class="text-white hover:text-gray-200">Log in</button>
+                        <button id="signupButton" class="bg-white text-black px-6 py-2 rounded-full hover:bg-gray-100 transition">Sign up</button>
+                    </div>
+                </nav>
+
+                <!-- Hero Content -->
+                <div class="container mx-auto px-4 mt-20 text-center">
+                    <h1 class="text-white text-6xl font-bold mb-6">Food delivery in Zimbabwe</h1>
+                    <p class="text-white text-xl mb-12">Your favorite local restaurants delivered to your doorstep</p>
+                    
+                    <!-- Location Search -->
+                    <div class="bg-white rounded-lg shadow-lg p-6">
+                        <h2 class="text-black text-xl font-semibold mb-4">Find Food Near You</h2>
+                        
+                        <!-- Location Confirmation Dialog -->
+                        <div id="locationConfirmDialog" class="hidden mb-4 p-4 bg-gray-50 rounded-lg">
+                            <p class="text-gray-700 mb-3">We detected you're in <span id="detectedCity" class="font-semibold"></span></p>
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <button onclick="confirmDetectedLocation()" class="flex-1 bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition">
+                                    Yes, deliver here
+                                </button>
+                                <button onclick="chooseAnotherLocation()" class="flex-1 bg-gray-100 text-black px-6 py-3 rounded-lg hover:bg-gray-200 transition">
+                                    Choose another location
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Location Search Input -->
+                        <div id="locationSearchContainer">
+                            <div class="flex flex-col gap-4">
+                                <div class="relative">
+                                    <input type="text" id="locationInput" placeholder="Enter city or area" 
+                                        class="w-full px-4 py-3 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:border-black text-black">
+                                    <i class="fas fa-map-marker-alt absolute left-3 top-3.5 text-gray-400"></i>
+                                    <div id="suggestions" class="suggestions-dropdown "></div>
+                                </div>
+                                <div id="map" class="hidden"></div>
+                                <div class="flex flex-col sm:flex-row gap-3">
+                                    <button onclick="requestLocation()" class="flex-1 bg-gray-100 text-black px-6 py-3 rounded-lg hover:bg-gray-200 transition flex items-center justify-center">
+                                        <button class="floating-button" id="confirmLocationButton">✔ Confirm</button>
+                                        <i class="fas fa-location-arrow mr-2"></i>
+                                        Use My Location
+                                    </button>
+                                    <button onclick="showMapSelector()" class="flex-1 bg-gray-100 text-black px-6 py-3 rounded-lg hover:bg-gray-200 transition flex items-center justify-center">
+                                        <i class="fas fa-map mr-2"></i>
+                                        Select on Map
+                                    </button>
+                                </div>
+                                <button onclick="findFood()" class="w-full bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition flex items-center justify-center">
+                                    <i class="fas fa-search mr-2"></i>
+                                    Find Food
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="container mx-auto px-4 py-16">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="text-center">
+                    <i class="fas fa-utensils text-4xl text-black mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-2">Choose from local restaurants</h3>
+                    <p class="text-gray-600">Browse menus from your favorite local restaurants</p>
+                </div>
+                <div class="text-center">
+                    <i class="fas fa-truck text-4xl text-black mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-2">Fast Delivery</h3>
+                    <p class="text-gray-600">Your food will be delivered in minutes</p>
+                </div>
+                <div class="text-center">
+                    <i class="fas fa-mobile-alt text-4xl text-black mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-2">Real-time tracking</h3>
+                    <p class="text-gray-600">Know exactly where your order is</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let authService;
+        let locationManager;
         let restaurants = []; // Store fetched restaurant data
+        let autocomplete;
+        let mapInitialized = false;
+        let marker = null;
+
+        // Initialize Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAARvi6shnDr1tTkYKxQJzNxbvbHQFrwi4",
+            authDomain: "musika-ec60d.firebaseapp.com",
+            projectId: "musika-ec60d",
+            storageBucket: "musika-ec60d.firebasestorage.app",
+            messagingSenderId: "533804958864",
+            appId: "1:533804958864:web:ac8ccdb5beaf274fff8415",
+            measurementId: "G-QWFKHLPLFH"
+        };
+
+        // Wait for DOM and scripts to load
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Initialize Firebase
+                if (!window.firebase) {
+                    throw new Error('Firebase not loaded');
+                }
+                firebase.initializeApp(firebaseConfig);
+                
+                // Initialize services
+                if (!window.MusikaAPI) {
+                    throw new Error('MusikaAPI not loaded');
+                }
+                
+                // Initialize auth service
+                authService = new AuthService();
+                await authService.initialize();
+                
+                // Initialize location service
+                locationManager = new LocationManager();
+                
+                // Load Google Maps
+                await google.maps.importLibrary("places");
+                
+                // Initialize app components
+                await initializeLocation();
+                if (typeof setupUI === 'function') setupUI();
+                if (typeof handleBackButton === 'function') handleBackButton();
+                if (window.userState) {
+                    userState.addListener(updateUIWithUserState);
+                }
+                if (typeof updateCartCount === 'function') updateCartCount();
+                await fetchRestaurants();
+                
+                // Initialize autocomplete
+                initAutocomplete();
+            } catch (error) {
+                console.error('Initialization error:', error);
+                handleInitializationError(error);
+            }
+        });
+
+        function handleInitializationError(error) {
+            const errorMessages = {
+                'Firebase not loaded': 'Authentication service is temporarily unavailable.',
+                'MusikaAPI not loaded': 'Restaurant service is temporarily unavailable.',
+                'Maps API not loaded': 'Location services are temporarily unavailable.'
+            };
+
+            const message = errorMessages[error.message] || 'Some features may be temporarily unavailable.';
+            
+            // Show error message to user
+            const container = document.querySelector('.hero-gradient');
+            if (container) {
+                const alert = document.createElement('div');
+                alert.className = 'bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4 mx-4';
+                alert.innerHTML = `
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>
+                        <p>${message}</p>
+                    </div>
+                `;
+                container.insertBefore(alert, container.firstChild);
+            }
+        }
 
         function initAutocomplete() {
-            autocomplete = new google.maps.places.Autocomplete(
-                document.getElementById('deliveryAddress'), { types: ['geocode'], componentRestrictions: { country: ['zw', 'za'] } });
-            autocomplete.addListener('place_changed', function() {
-                const place = autocomplete.getPlace();
-                if (place.geometry) {
-                    alert(`Selected place: ${place.formatted_address}`);
-                } else {
-                    alert('Location not found. Please try a different address.');
+            try {
+                if (!window.google || !google.maps || !google.maps.places) {
+                    throw new Error('Maps API not loaded');
                 }
-            });
+
+                const input = document.getElementById('locationInput');
+                if (!input) return;
+
+                autocomplete = new google.maps.places.Autocomplete(input, {
+                    types: ['geocode'],
+                    componentRestrictions: { country: ['zw', 'za'] }
+                });
+                
+                autocomplete.addListener('place_changed', function() {
+                    const place = autocomplete.getPlace();
+                    if (place.geometry) {
+                        locationManager.handlePlaceSelection(place);
+                        showMap();
+                    } else {
+                        alert('Location not found. Please try a different address.');
+                    }
+                });
+            } catch (error) {
+                console.error('Error initializing autocomplete:', error);
+                handleInitializationError(error);
+            }
         }
 
         async function fetchRestaurants() {
             try {
-                const response = await fetch('/api/restaurants');
-                restaurants = await response.json(); // Store the restaurant data
+                // For development, return mock data
+                restaurants = [
+                    { name: "Restaurant 1", address: "Address 1" },
+                    { name: "Restaurant 2", address: "Address 2" },
+                    { name: "Restaurant 3", address: "Address 3" }
+                ];
+                
+                // When API is ready, use this:
+                // const api = new MusikaAPI();
+                // restaurants = await api.getRestaurants();
             } catch (error) {
                 console.error('Error fetching restaurants:', error);
             }
         }
 
         function filterLocations() {
-            const input = document.getElementById('deliveryAddress').value.toLowerCase();
+            const input = document.getElementById('locationInput').value.toLowerCase();
             const suggestions = document.getElementById('suggestions');
-            suggestions.innerHTML = ''; // Clear previous suggestions
+            suggestions.innerHTML = '';
 
             if (input) {
+                suggestions.classList.remove('hidden');
                 const filteredRestaurants = restaurants.filter(restaurant => 
                     restaurant.name.toLowerCase().includes(input)
                 );
@@ -82,40 +306,137 @@
                     suggestionItem.className = 'suggestion-item';
                     suggestionItem.innerText = restaurant.name;
                     suggestionItem.onclick = () => {
-                        document.getElementById('deliveryAddress').value = restaurant.name;
-                        suggestions.innerHTML = ''; // Clear suggestions
+                        document.getElementById('locationInput').value = restaurant.name;
+                        suggestions.classList.add('hidden');
+                        suggestions.innerHTML = '';
                     };
                     suggestions.appendChild(suggestionItem);
+                });
+            } else {
+                suggestions.classList.add('hidden');
+            }
+        }
+
+        async function initializeLocation() {
+            // Initialize location manager with the input field
+            locationManager.init('locationInput', true, (location) => {
+                if (location) {
+                    document.getElementById('detectedCity').textContent = location.city || location.address;
+                }
+            });
+
+            // Add input event listener for custom suggestions
+            document.getElementById('locationInput').addEventListener('input', filterLocations);
+
+            try {
+                // Request location permission immediately
+                const location = await locationManager.getCurrentLocation();
+                if (location) {
+                    document.getElementById('detectedCity').textContent = location.city || location.address;
+                    document.getElementById('locationConfirmDialog').classList.remove('hidden');
+                    document.getElementById('locationSearchContainer').classList.add('hidden');
+                }
+            } catch (error) {
+                console.error('Error detecting location:', error);
+                showLocationSearch();
+            }
+        }
+
+        function confirmDetectedLocation() {
+            document.getElementById('locationConfirmDialog').classList.add('hidden');
+            showLocationSearch();
+            showMap();
+        }
+
+        function chooseAnotherLocation() {
+            document.getElementById('locationConfirmDialog').classList.add('hidden');
+            showLocationSearch();
+        }
+
+        function showLocationSearch() {
+            document.getElementById('locationSearchContainer').classList.remove('hidden');
+        }
+
+        function showMap() {
+            const mapElement = document.getElementById('map');
+            if (!mapElement) return;
+
+            mapElement.classList.remove('hidden');
+            
+            if (locationManager && !locationManager.map && !mapInitialized) {
+                mapElement.innerHTML = `
+                    <div class="flex items-center justify-center h-full bg-gray-100 rounded-lg">
+                        <div class="text-center p-4">
+                            <i class="fas fa-spinner fa-spin text-4xl text-gray-400 mb-2"></i>
+                            <p class="text-gray-600">Loading map...</p>
+                        </div>
+                    </div>
+                `;
+                locationManager.initMap().catch(error => {
+                    console.error('Error initializing map:', error);
+                    mapElement.innerHTML = `
+                        <div class="flex items-center justify-center h-full bg-gray-100 rounded-lg">
+                            <div class="text-center p-4">
+                                <i class="fas fa-exclamation-triangle text-4xl text-yellow-500 mb-2"></i>
+                                <p class="text-gray-600">Unable to load the map. Please try again later.</p>
+                            </div>
+                        </div>
+                    `;
                 });
             }
         }
 
-        document.getElementById('loginButton').addEventListener('click', function() {
-            window.location.href = 'login.html';
-        });
-
-        document.getElementById('signupButton').addEventListener('click', function() {
-            window.location.href = 'signup-select.html';
-        });
-
-        document.getElementById('searchButton').addEventListener('click', async function() {
-            const address = document.getElementById('deliveryAddress').value;
-            const time = document.getElementById('deliveryTime').value;
-            if (address) {
-                alert(`Searching for delivery options to ${address} at ${time}`);
-                window.location.href = 'user-search.html';
-                // Here you can add functionality to fetch delivery options from an API
+        function showMapSelector() {
+            window.location.href = 'map_location_selector.html';
+        }
+        
+        document.getElementById("confirmLocationButton").addEventListener("click", function () {
+            if (marker) {
+                const lat = marker.getPosition().lat();
+                const lng = marker.getPosition().lng();
+                setTimeout(() => {
+                    if (confirm(`Is this the correct location? Lat: ${lat}, Lng: ${lng}`)) {
+                        destinationLocation = { lat, lng };
+                        alert(`Location saved: Lat: ${lat}, Lng: ${lng}`);
+                        window.location.href = `user-search.html?lat=${lat}&lng=${lng}`;
+                    }
+                }, 1000);
             } else {
-                alert('Please enter a delivery address.');
+                alert("Please drop a pin first.");
             }
         });
 
-        // Initialize the autocomplete and fetch restaurants when the window loads
-        window.onload = function() {
-            initAutocomplete();
-            fetchRestaurants();
-        };
+        async function requestLocation() {
+            try {
+                const location = await locationManager.getCurrentLocation();
+                if (location) {
+                    document.getElementById('locationInput').value = location.address || location.city;
+                    showMap();
+                }
+            } catch (error) {
+                console.error('Error getting location:', error);
+                alert('Unable to get your location. Please ensure you have granted location permissions.');
+            }
+        }
+
+        function findFood() {
+            const location = locationManager?.currentLocation;
+            if (!location) {
+                alert('Please select a delivery location first');
+                return;
+            }
+            localStorage.setItem('selectedLocation', JSON.stringify(location));
+            window.location.href = 'user-search.html';
+        }
+
+        // Add event listeners for login and signup buttons
+        document.getElementById('loginButton')?.addEventListener('click', function() {
+            window.location.href = 'login.html';
+        });
+
+        document.getElementById('signupButton')?.addEventListener('click', function() {
+            window.location.href = 'signup-select.html';
+        });
     </script>
 </body>
 </html>
-</create_file>

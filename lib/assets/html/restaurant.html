@@ -3,15 +3,392 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Restaurants - Musika</title>
+    <title>Musika Zw - Restaurant Details</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <script src="assets/js/restaurant.js" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1IiwBut2vPRatOTrZ8jDbYogAxTKXT5Q&libraries=places"></script>
+    <script src="js/api.js"></script>
 </head>
-<body>
-    <div class="container mx-auto">
-        <h1 class="text-2xl font-bold">Available Restaurants</h1>
-        <ul id="restaurantList" class="list-disc pl-5"></ul>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <a href="index.html" class="flex items-center">
+                        <img src="logo.jpeg" alt="Musika Logo" class="h-10 w-10 rounded-full mr-4">
+                        <span class="text-xl font-semibold">Musika</span>
+                    </a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="cart.html" class="relative">
+                        <i class="fas fa-shopping-cart text-xl"></i>
+                        <span id="cartCount" class="absolute -top-2 -right-2 bg-black text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                    </a>
+                    <div class="relative">
+                        <button id="userMenuBtn" class="flex items-center space-x-2">
+                            <i class="fas fa-user-circle text-2xl"></i>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div id="userMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2">
+                            <a href="order-history.html" class="block px-4 py-2 hover:bg-gray-100">
+                                <i class="fas fa-history mr-2"></i>Order History
+                            </a>
+                            <a href="#" class="block px-4 py-2 hover:bg-gray-100">
+                                <i class="fas fa-heart mr-2"></i>Favorites
+                            </a>
+                            <a href="#" class="block px-4 py-2 hover:bg-gray-100">
+                                <i class="fas fa-cog mr-2"></i>Settings
+                            </a>
+                            <hr class="my-2">
+                            <a href="#" class="block px-4 py-2 hover:bg-gray-100 text-red-600">
+                                <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Restaurant Header -->
+    <div class="relative h-96">
+        <div id="restaurantCover" class="absolute inset-0 bg-cover bg-center"></div>
+        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+        <div class="container mx-auto px-4 h-full flex items-end pb-8 relative">
+            <div class="text-white">
+                <h1 id="restaurantName" class="text-4xl font-bold mb-2"></h1>
+                <div class="flex items-center space-x-4 mb-2">
+                    <div class="flex items-center">
+                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                        <span id="restaurantRating"></span>
+                        <span class="mx-2">•</span>
+                        <span id="reviewCount"></span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-clock mr-1"></i>
+                        <span>20-30 min</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-motorcycle mr-1"></i>
+                        <span>$2 delivery</span>
+                    </div>
+                </div>
+                <p id="restaurantDescription" class="text-gray-200"></p>
+            </div>
+        </div>
     </div>
+
+    <!-- Menu and Reviews -->
+    <div class="container mx-auto px-4 py-8">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Menu Section -->
+            <div class="flex-1">
+                <div class="sticky top-20">
+                    <h2 class="text-2xl font-semibold mb-6">Menu</h2>
+                    <div id="menuCategories" class="flex overflow-x-auto pb-4 mb-6 space-x-4">
+                        <!-- Categories will be added here -->
+                    </div>
+                    <div id="menuItems" class="space-y-6">
+                        <!-- Menu items will be added here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reviews Section -->
+            <div class="lg:w-1/3">
+                <div class="sticky top-20">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-semibold">Reviews</h2>
+                        <button onclick="showReviewModal()" class="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-900">
+                            Write Review
+                        </button>
+                    </div>
+                    <div id="reviewsList" class="space-y-6">
+                        <!-- Reviews will be added here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add to Cart Modal -->
+    <div id="cartModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <div class="flex justify-between items-start mb-4">
+                <h3 id="modalItemName" class="text-xl font-semibold"></h3>
+                <button onclick="closeCartModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <p id="modalItemDescription" class="text-gray-600 mb-4"></p>
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center space-x-4">
+                    <button onclick="updateQuantity(-1)" class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:border-black">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <span id="itemQuantity" class="text-xl font-medium">1</span>
+                    <button onclick="updateQuantity(1)" class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:border-black">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                <div class="text-xl font-semibold">$<span id="modalItemPrice"></span></div>
+            </div>
+            <button onclick="addToCart()" class="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-900">
+                Add to Cart
+            </button>
+        </div>
+    </div>
+
+    <!-- Review Modal -->
+    <div id="reviewModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <div class="flex justify-between items-start mb-4">
+                <h3 class="text-xl font-semibold">Write a Review</h3>
+                <button onclick="closeReviewModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 mb-2">Rating</label>
+                <div class="flex space-x-2">
+                    <button onclick="setRating(1)" class="text-2xl text-gray-300 hover:text-yellow-400">★</button>
+                    <button onclick="setRating(2)" class="text-2xl text-gray-300 hover:text-yellow-400">★</button>
+                    <button onclick="setRating(3)" class="text-2xl text-gray-300 hover:text-yellow-400">★</button>
+                    <button onclick="setRating(4)" class="text-2xl text-gray-300 hover:text-yellow-400">★</button>
+                    <button onclick="setRating(5)" class="text-2xl text-gray-300 hover:text-yellow-400">★</button>
+                </div>
+            </div>
+            <div class="mb-6">
+                <label class="block text-gray-700 mb-2">Review</label>
+                <textarea id="reviewText" rows="4" class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:border-black"></textarea>
+            </div>
+            <button onclick="submitReview()" class="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-900">
+                Submit Review
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const api = new MusikaAPI();
+        let currentRestaurant = null;
+        let selectedMenuItem = null;
+        let selectedRating = 0;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Setup user menu toggle
+            const userMenuBtn = document.getElementById('userMenuBtn');
+            const userMenu = document.getElementById('userMenu');
+            
+            userMenuBtn.addEventListener('click', () => {
+                userMenu.classList.toggle('hidden');
+            });
+
+            // Close user menu when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('#userMenuBtn') && !e.target.closest('#userMenu')) {
+                    userMenu.classList.add('hidden');
+                }
+            });
+
+            // Get restaurant ID from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const restaurantId = urlParams.get('id');
+
+            if (restaurantId) {
+                await loadRestaurantDetails(restaurantId);
+            } else {
+                window.location.href = 'index.html';
+            }
+
+            // Update cart count
+            updateCartCount();
+        });
+
+        async function loadRestaurantDetails(restaurantId) {
+            try {
+                currentRestaurant = await api.getRestaurantDetails(restaurantId);
+                
+                // Update restaurant info
+                document.getElementById('restaurantCover').style.backgroundImage = `url(${currentRestaurant.image_url})`;
+                document.getElementById('restaurantName').textContent = currentRestaurant.name;
+                document.getElementById('restaurantRating').textContent = currentRestaurant.rating.toFixed(1);
+                document.getElementById('reviewCount').textContent = `${currentRestaurant.review_count} reviews`;
+                document.getElementById('restaurantDescription').textContent = currentRestaurant.description;
+
+                // Load menu categories
+                const categories = [...new Set(currentRestaurant.menu_items.map(item => item.category))];
+                document.getElementById('menuCategories').innerHTML = categories.map(category => `
+                    <button class="px-4 py-2 border border-gray-300 rounded-full hover:border-black whitespace-nowrap"
+                            onclick="filterMenuItems('${category}')">
+                        ${category}
+                    </button>
+                `).join('');
+
+                // Load menu items
+                displayMenuItems(currentRestaurant.menu_items);
+
+                // Load reviews
+                displayReviews(currentRestaurant.reviews);
+            } catch (error) {
+                console.error('Error loading restaurant details:', error);
+            }
+        }
+
+        function displayMenuItems(items) {
+            document.getElementById('menuItems').innerHTML = items.map(item => `
+                <div class="flex items-start justify-between p-4 border border-gray-200 rounded-lg hover:border-black cursor-pointer"
+                     onclick="showCartModal(${JSON.stringify(item).replace(/"/g, '&quot;')})">
+                    <div class="flex-1">
+                        <h3 class="font-medium mb-1">${item.name}</h3>
+                        <p class="text-gray-600 text-sm mb-2">${item.description}</p>
+                        <div class="text-sm">$${item.price.toFixed(2)}</div>
+                    </div>
+                    ${item.image_url ? `
+                        <div class="ml-4">
+                            <img src="${item.image_url}" alt="${item.name}" class="w-24 h-24 object-cover rounded-lg">
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function displayReviews(reviews) {
+            document.getElementById('reviewsList').innerHTML = reviews.map(review => `
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center">
+                            <i class="fas fa-user-circle text-2xl text-gray-400 mr-2"></i>
+                            <span class="font-medium">${review.user_name}</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-star text-yellow-400 mr-1"></i>
+                            <span>${review.rating.toFixed(1)}</span>
+                        </div>
+                    </div>
+                    <p class="text-gray-600">${review.text}</p>
+                    <div class="text-sm text-gray-500 mt-2">
+                        ${new Date(review.created_at).toLocaleDateString()}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterMenuItems(category) {
+            const filteredItems = currentRestaurant.menu_items.filter(item => item.category === category);
+            displayMenuItems(filteredItems);
+        }
+
+        function showCartModal(item) {
+            selectedMenuItem = item;
+            document.getElementById('modalItemName').textContent = item.name;
+            document.getElementById('modalItemDescription').textContent = item.description;
+            document.getElementById('modalItemPrice').textContent = item.price.toFixed(2);
+            document.getElementById('itemQuantity').textContent = '1';
+            document.getElementById('cartModal').classList.remove('hidden');
+        }
+
+        function closeCartModal() {
+            document.getElementById('cartModal').classList.add('hidden');
+            selectedMenuItem = null;
+        }
+
+        function updateQuantity(change) {
+            const quantityElement = document.getElementById('itemQuantity');
+            let quantity = parseInt(quantityElement.textContent) + change;
+            quantity = Math.max(1, quantity); // Ensure quantity is at least 1
+            quantityElement.textContent = quantity;
+        }
+
+        function addToCart() {
+            if (!selectedMenuItem) return;
+
+            const quantity = parseInt(document.getElementById('itemQuantity').textContent);
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+
+            const cartItem = {
+                restaurant_id: currentRestaurant.id,
+                restaurant_name: currentRestaurant.name,
+                item_id: selectedMenuItem.id,
+                name: selectedMenuItem.name,
+                price: selectedMenuItem.price,
+                quantity: quantity
+            };
+
+            // Check if item already exists in cart
+            const existingItemIndex = cart.findIndex(item => 
+                item.restaurant_id === cartItem.restaurant_id && 
+                item.item_id === cartItem.item_id
+            );
+
+            if (existingItemIndex !== -1) {
+                cart[existingItemIndex].quantity += quantity;
+            } else {
+                cart.push(cartItem);
+            }
+
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+            closeCartModal();
+        }
+
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const count = cart.reduce((total, item) => total + item.quantity, 0);
+            document.getElementById('cartCount').textContent = count;
+        }
+
+        function showReviewModal() {
+            selectedRating = 0;
+            document.getElementById('reviewText').value = '';
+            document.getElementById('reviewModal').classList.remove('hidden');
+            updateStarRating();
+        }
+
+        function closeReviewModal() {
+            document.getElementById('reviewModal').classList.add('hidden');
+        }
+
+        function setRating(rating) {
+            selectedRating = rating;
+            updateStarRating();
+        }
+
+        function updateStarRating() {
+            const stars = document.querySelectorAll('#reviewModal .text-2xl');
+            stars.forEach((star, index) => {
+                star.className = `text-2xl ${index < selectedRating ? 'text-yellow-400' : 'text-gray-300'} hover:text-yellow-400`;
+            });
+        }
+
+        async function submitReview() {
+            if (!selectedRating) {
+                alert('Please select a rating');
+                return;
+            }
+
+            const reviewText = document.getElementById('reviewText').value.trim();
+            if (!reviewText) {
+                alert('Please write a review');
+                return;
+            }
+
+            try {
+                await api.submitReview({
+                    restaurant_id: currentRestaurant.id,
+                    rating: selectedRating,
+                    text: reviewText,
+                    user_id: 1 // In a real app, get from session
+                });
+
+                // Reload restaurant details to update reviews
+                await loadRestaurantDetails(currentRestaurant.id);
+                closeReviewModal();
+            } catch (error) {
+                console.error('Error submitting review:', error);
+                alert('Failed to submit review. Please try again.');
+            }
+        }
+    </script>
 </body>
 </html>

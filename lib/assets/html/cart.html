@@ -3,78 +3,430 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cart - Musika</title>
+    <title>Musika Zw - Cart</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1IiwBut2vPRatOTrZ8jDbYogAxTKXT5Q&libraries=places"></script>
+    <script src="js/location.js"></script>
+    <script src="js/api.js"></script>
 </head>
-<body class="bg-gray-100">
-    <header class="flex justify-between items-center p-4 bg-white shadow">
-        <div class="flex items-center">
-            <img src="logo.jpeg" alt="Musika Logo" class="h-10 mr-4">
-            <span class="text-2xl font-bold">Musika</span>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <a href="index.html" class="flex items-center">
+                        <img src="logo.jpeg" alt="Musika Logo" class="h-10 w-10 rounded-full mr-4">
+                        <span class="text-xl font-semibold">Musika</span>
+                    </a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <button id="userMenuBtn" class="flex items-center space-x-2">
+                            <i class="fas fa-user-circle text-2xl"></i>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div id="userMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2">
+                            <a href="order-history.html" class="block px-4 py-2 hover:bg-gray-100">
+                                <i class="fas fa-history mr-2"></i>Order History
+                            </a>
+                            <a href="#" class="block px-4 py-2 hover:bg-gray-100">
+                                <i class="fas fa-heart mr-2"></i>Favorites
+                            </a>
+                            <a href="#" class="block px-4 py-2 hover:bg-gray-100">
+                                <i class="fas fa-cog mr-2"></i>Settings
+                            </a>
+                            <hr class="my-2">
+                            <a href="#" class="block px-4 py-2 hover:bg-gray-100 text-red-600">
+                                <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div>
-            <button id="profileButton" class="text-black bg-white py-2 px-4 rounded-full">User Profile</button>
-        </div>
-    </header>
+    </nav>
 
-    <main class="flex-grow flex flex-col justify-center items-center text-center p-4">
-        <h1 class="text-3xl font-bold mb-4">Your Cart</h1>
-        <div id="cartItems" class="w-11/12 max-w-2xl bg-white rounded-lg shadow-lg p-4">
-            <!-- Cart items will be dynamically added here -->
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Cart Items -->
+            <div class="flex-1">
+                <h1 class="text-2xl font-semibold mb-6">Your Cart</h1>
+                <div id="cartItems" class="space-y-4">
+                    <!-- Cart items will be added here -->
+                </div>
+                <div id="emptyCart" class="hidden text-center py-8">
+                    <i class="fas fa-shopping-cart text-4xl text-gray-400 mb-4"></i>
+                    <p class="text-gray-600">Your cart is empty</p>
+                    <a href="index.html" class="inline-block mt-4 px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-900">
+                        Browse Restaurants
+                    </a>
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="lg:w-1/3">
+                <div class="bg-white rounded-lg shadow-md p-6 sticky top-24">
+                    <h2 class="text-xl font-semibold mb-4">Order Summary</h2>
+                    
+                    <!-- Delivery Address -->
+                    <div class="mb-6">
+                        <h3 class="font-medium mb-2">Delivery Address</h3>
+                        <div id="selectedAddress" class="text-gray-600 mb-2">
+                            <!-- Selected address will be shown here -->
+                        </div>
+                        <button onclick="showAddressesModal()" class="text-black hover:underline text-sm">
+                            Change Address
+                        </button>
+                    </div>
+
+                    <!-- Order Details -->
+                    <div class="space-y-3 mb-6">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Subtotal</span>
+                            <span id="subtotal">$0.00</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Delivery Fee</span>
+                            <span id="deliveryFee">$2.00</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Service Fee</span>
+                            <span id="serviceFee">$1.00</span>
+                        </div>
+                        <hr>
+                        <div class="flex justify-between font-semibold">
+                            <span>Total</span>
+                            <span id="total">$0.00</span>
+                        </div>
+                    </div>
+
+                    <!-- Place Order Button -->
+                    <button onclick="placeOrder()" 
+                        class="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-900 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                        id="placeOrderBtn" disabled>
+                        Place Order
+                    </button>
+                </div>
+            </div>
         </div>
-        <button id="checkoutButton" class="bg-black text-white py-4 px-6 text-lg mt-4">Proceed to Checkout</button>
     </main>
 
-    <!-- Popup for notifications -->
-    <div id="popup" class="fixed top-0 right-0 m-4 p-4 bg-white shadow-lg rounded-lg hidden z-50">
-        <div class="popup items-center p-4">
-            <p><a href="#" id="dashboardLink">Dashboard</a></p>
-            <p><a href="#" id="cartLink">Cart</a></p>
-            <p><a href="#" id="logoutLink">Logout</a></p>
+    <!-- Addresses Modal -->
+    <div id="addressesModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <div class="flex justify-between items-start mb-4">
+                <h3 class="text-xl font-semibold">Delivery Address</h3>
+                <button onclick="closeAddressesModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="addressesList" class="space-y-4 mb-6">
+                <!-- Addresses will be added here -->
+            </div>
+            <button onclick="showMapModal()" class="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-900">
+                Add New Address
+            </button>
+        </div>
+    </div>
+
+    <!-- Map Modal -->
+    <div id="mapModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-3xl mx-4">
+            <div class="flex justify-between items-start mb-4">
+                <h3 class="text-xl font-semibold">Select Delivery Location</h3>
+                <button onclick="closeMapModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="map" class="h-96 w-full mb-4 rounded-lg"></div>
+            <button onclick="confirmLocation()" 
+                class="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-900">
+                Confirm Location
+            </button>
         </div>
     </div>
 
     <script>
-        const cart = [];
+        const api = new MusikaAPI();
+        let locationManager;
+        let selectedAddress = null;
 
-        // Function to fetch cart items from the API
-        async function fetchCartItems() {
-            try {
-                const response = await fetch('/api/cart'); // Replace with your API endpoint
-                const data = await response.json();
-                data.forEach(item => {
-                    cart.push(item);
-                });
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Initialize location manager
+            locationManager = new LocationManager();
+            
+            // Setup user menu toggle
+            const userMenuBtn = document.getElementById('userMenuBtn');
+            const userMenu = document.getElementById('userMenu');
+            
+            userMenuBtn.addEventListener('click', () => {
+                userMenu.classList.toggle('hidden');
+            });
+
+            // Close user menu when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('#userMenuBtn') && !e.target.closest('#userMenu')) {
+                    userMenu.classList.add('hidden');
+                }
+            });
+
+            // Load cart items
+            displayCart();
+
+            // Try to get last saved address
+            const lastLocation = locationManager.getLastLocation();
+            if (lastLocation) {
+                selectedAddress = lastLocation;
+                updateSelectedAddress();
+            }
+        });
+
+        function displayCart() {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const cartItemsContainer = document.getElementById('cartItems');
+            const emptyCartMessage = document.getElementById('emptyCart');
+            const placeOrderBtn = document.getElementById('placeOrderBtn');
+
+            if (cart.length === 0) {
+                cartItemsContainer.classList.add('hidden');
+                emptyCartMessage.classList.remove('hidden');
+                placeOrderBtn.disabled = true;
+                return;
+            }
+
+            cartItemsContainer.classList.remove('hidden');
+            emptyCartMessage.classList.add('hidden');
+            placeOrderBtn.disabled = !selectedAddress;
+
+            // Group items by restaurant
+            const restaurantGroups = cart.reduce((groups, item) => {
+                if (!groups[item.restaurant_id]) {
+                    groups[item.restaurant_id] = {
+                        name: item.restaurant_name,
+                        items: []
+                    };
+                }
+                groups[item.restaurant_id].items.push(item);
+                return groups;
+            }, {});
+
+            cartItemsContainer.innerHTML = Object.entries(restaurantGroups).map(([restaurantId, group]) => `
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h3 class="font-semibold mb-4">${group.name}</h3>
+                    <div class="space-y-4">
+                        ${group.items.map(item => `
+                            <div class="flex items-center justify-between">
+                                <div class="flex-1">
+                                    <h4 class="font-medium">${item.name}</h4>
+                                    <div class="text-sm text-gray-600">$${item.price.toFixed(2)} each</div>
+                                </div>
+                                <div class="flex items-center space-x-4">
+                                    <div class="flex items-center space-x-2">
+                                        <button onclick="updateCartItem(${restaurantId}, ${item.item_id}, -1)" 
+                                            class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:border-black">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                        <span class="w-8 text-center">${item.quantity}</span>
+                                        <button onclick="updateCartItem(${restaurantId}, ${item.item_id}, 1)"
+                                            class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:border-black">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                    <div class="text-right min-w-[80px]">
+                                        $${(item.price * item.quantity).toFixed(2)}
+                                    </div>
+                                    <button onclick="removeCartItem(${restaurantId}, ${item.item_id})"
+                                        class="text-red-600 hover:text-red-800">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+
+            updateOrderSummary();
+        }
+
+        function updateCartItem(restaurantId, itemId, change) {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const itemIndex = cart.findIndex(item => 
+                item.restaurant_id === restaurantId && 
+                item.item_id === itemId
+            );
+
+            if (itemIndex !== -1) {
+                cart[itemIndex].quantity = Math.max(1, cart[itemIndex].quantity + change);
+                localStorage.setItem('cart', JSON.stringify(cart));
                 displayCart();
-            } catch (error) {
-                console.error('Error fetching cart items:', error);
             }
         }
 
-        function displayCart() {
-            const cartItemsDiv = document.getElementById('cartItems');
-            cartItemsDiv.innerHTML = ''; // Clear previous items
-            cart.forEach((item, index) => {
-                const itemDiv = document.createElement('div');
-                itemDiv.className = 'flex justify-between items-center p-2 border-b';
-                itemDiv.innerHTML = `<span>${item.name}</span> <button onclick="removeFromCart(${index})" class="text-red-500">Remove</button>`;
-                cartItemsDiv.appendChild(itemDiv);
-            });
-        }
-
-        function removeFromCart(index) {
-            cart.splice(index, 1);
+        function removeCartItem(restaurantId, itemId) {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const updatedCart = cart.filter(item => 
+                !(item.restaurant_id === restaurantId && item.item_id === itemId)
+            );
+            localStorage.setItem('cart', JSON.stringify(cart));
             displayCart();
         }
 
-        document.getElementById('checkoutButton').addEventListener('click', function() {
-            // Navigate to checkout page (replace with actual URL)
-            window.location.href = 'checkout.html';
-        });
+        function updateOrderSummary() {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+            const deliveryFee = 2.00;
+            const serviceFee = 1.00;
+            const total = subtotal + deliveryFee + serviceFee;
 
-        // Fetch cart items when the page loads
-        window.onload = fetchCartItems;
+            document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+            document.getElementById('deliveryFee').textContent = `$${deliveryFee.toFixed(2)}`;
+            document.getElementById('serviceFee').textContent = `$${serviceFee.toFixed(2)}`;
+            document.getElementById('total').textContent = `$${total.toFixed(2)}`;
+        }
+
+        async function loadSavedAddresses() {
+            try {
+                // In a real app, we would get the user ID from the session
+                const userId = 1;
+                const addresses = await api.getAddresses(userId);
+                
+                const addressesList = document.getElementById('addressesList');
+                addressesList.innerHTML = addresses.map(address => `
+                    <div class="flex items-center justify-between p-3 border rounded-lg hover:border-black cursor-pointer"
+                         onclick="selectAddress(${JSON.stringify(address)})">
+                        <div class="flex items-start">
+                            <i class="fas fa-map-marker-alt mt-1 mr-3"></i>
+                            <div>
+                                <div class="font-medium">${address.address}</div>
+                                ${address.is_default ? '<div class="text-sm text-gray-500">Default Address</div>' : ''}
+                            </div>
+                        </div>
+                        ${address.is_default ? '<i class="fas fa-check text-green-500"></i>' : ''}
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading addresses:', error);
+            }
+        }
+
+        function showAddressesModal() {
+            document.getElementById('addressesModal').classList.remove('hidden');
+            loadSavedAddresses();
+        }
+
+        function closeAddressesModal() {
+            document.getElementById('addressesModal').classList.add('hidden');
+        }
+
+        function showMapModal() {
+            closeAddressesModal();
+            document.getElementById('mapModal').classList.remove('hidden');
+            if (!locationManager.map) {
+                locationManager.init('map', null, onLocationSelected);
+            }
+        }
+
+        function closeMapModal() {
+            document.getElementById('mapModal').classList.add('hidden');
+        }
+
+        function selectAddress(address) {
+            selectedAddress = address;
+            updateSelectedAddress();
+            closeAddressesModal();
+            document.getElementById('placeOrderBtn').disabled = false;
+        }
+
+        function updateSelectedAddress() {
+            if (selectedAddress) {
+                document.getElementById('selectedAddress').innerHTML = `
+                    <div class="flex items-start">
+                        <i class="fas fa-map-marker-alt mt-1 mr-2"></i>
+                        <span>${selectedAddress.address}</span>
+                    </div>
+                `;
+            }
+        }
+
+        async function confirmLocation() {
+            const location = locationManager.currentLocation;
+            if (location) {
+                // Save address
+                try {
+                    const address = await api.saveAddress({
+                        user_id: 1, // In a real app, get from session
+                        address: location.address,
+                        lat: location.lat,
+                        lng: location.lng
+                    });
+
+                    selectAddress(address);
+                } catch (error) {
+                    console.error('Error saving address:', error);
+                }
+
+                closeMapModal();
+            }
+        }
+
+        function onLocationSelected(location) {
+            // This is handled by the location manager
+        }
+
+        async function placeOrder() {
+            if (!selectedAddress) {
+                alert('Please select a delivery address');
+                return;
+            }
+
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            if (cart.length === 0) {
+                alert('Your cart is empty');
+                return;
+            }
+
+            try {
+                // Group items by restaurant
+                const restaurantOrders = cart.reduce((orders, item) => {
+                    if (!orders[item.restaurant_id]) {
+                        orders[item.restaurant_id] = {
+                            restaurant_id: item.restaurant_id,
+                            items: []
+                        };
+                    }
+                    orders[item.restaurant_id].items.push({
+                        item_id: item.item_id,
+                        quantity: item.quantity
+                    });
+                    return orders;
+                }, {});
+
+                // Place an order for each restaurant
+                for (const order of Object.values(restaurantOrders)) {
+                    await api.placeOrder({
+                        user_id: 1, // In a real app, get from session
+                        restaurant_id: order.restaurant_id,
+                        delivery_address: {
+                            address: selectedAddress.address,
+                            lat: selectedAddress.lat,
+                            lng: selectedAddress.lng
+                        },
+                        items: order.items
+                    });
+                }
+
+                // Clear cart and redirect to order history
+                localStorage.removeItem('cart');
+                window.location.href = 'order-history.html';
+            } catch (error) {
+                console.error('Error placing order:', error);
+                alert('Failed to place order. Please try again.');
+            }
+        }
     </script>
 </body>
 </html>
