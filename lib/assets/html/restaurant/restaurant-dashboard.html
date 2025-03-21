@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Dashboard</title>
+    <link rel="stylesheet" href="../css/restaurant-dashboard.css">
+</head>
+<body>
+    <h1>Restaurant Dashboard</h1>
+    <script src="../js/restaurant-dashboard.js"></script>
+</body>
+</html>
+        <div class="row">
+            <!-- Sidebar -->
+            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <div class="text-center mb-4">
+                        <img src="assets/images/logo.png" alt="Musika ZW" class="img-fluid" style="max-width: 150px;">
+                    </div>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#dashboard-section" data-bs-toggle="tab">
+                                <i class="bi bi-speedometer2 me-2"></i>Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#orders-section" data-bs-toggle="tab">
+                                <i class="bi bi-cart-check me-2"></i>Orders
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#menu-section" data-bs-toggle="tab">
+                                <i class="bi bi-menu-button-wide me-2"></i>Menu Management
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#analytics-section" data-bs-toggle="tab">
+                                <i class="bi bi-graph-up me-2"></i>Analytics
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#settings-section" data-bs-toggle="tab">
+                                <i class="bi bi-gear me-2"></i>Settings
+                            </a>
+                        </li>
+                        <li class="nav-item mt-5">
+                            <a class="nav-link text-danger" href="#" id="logout-btn">
+                                <i class="bi bi-box-arrow-right me-2"></i>Logout
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2" id="section-title">Dashboard</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-bell"></i>
+                                <span class="badge bg-danger">3</span>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-person-circle"></i> Profile
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab content -->
+                <div class="tab-content">
+                    <!-- Dashboard Section -->
+                    <div class="tab-pane fade show active" id="dashboard-section">
+                        <div class="row mb-4">
+                            <div class="col-md-3 mb-4">
+                                <div class="card text-white bg-primary">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Today's Orders</h5>
+                                        <h2 class="card-text" id="today-orders-count">0</h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-4">
+                                <div class="card text-white bg-success">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Today's Revenue</h5>
+                                        <h2 class="card-text" id="today-revenue">$0.00</h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-4">
+                                <div class="card text-white bg-warning">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Pending Orders</h5>
+                                        <h2 class="card-text" id="pending-orders-count">0</h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-4">
+                                <div class="card text-white bg-info">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Average Rating</h5>
+                                        <h2 class="card-text" id="average-rating">0.0</h2>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-8 mb-4">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="card-title">Revenue Overview</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="revenue-chart" height="250"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-4">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="card-title">Recent Orders</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="recent-orders-list">
+                                            <div class="text-center">
+                                                <div class="spinner-border" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Orders Section -->
+                    <div class="tab-pane fade" id="orders-section">
+                        <div class="card">
+                            <div class="card-header">
+                                <ul class="nav nav-tabs card-header-tabs">
+                                    <li class="nav-item">
+                                        <a class="nav-link order-tab active" data-status="pending" href="#">Pending</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link order-tab" data-status="accepted" href="#">Accepted</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link order-tab" data-status="ready" href="#">Ready</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link order-tab" data-status="delivered" href="#">Delivered</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link order-tab" data-status="rejected" href="#">Rejected</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-body">
+                                <div id="orders-container">
+                                    <div class="text-center">
+                                        <div class="spinner-border" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Menu Management Section -->
+                    <div class="tab-pane fade" id="menu-section">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="card">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h5 class="card-title mb-0">Menu Items</h5>
+                                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMenuItemModal">
+                                            <i class="bi bi-plus-circle"></i> Add Item
+                                        </button>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="menu-items-container">
+                                            <div class="text-center">
+                                                <div class="spinner-border" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h5 class="card-title mb-0">Categories</h5>
+                                        <button class="btn btn-sm btn-primary" id="add-category-btn">
+                                            <i class="bi bi-plus-circle"></i> Add
+                                        </button>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="menu-categories">
+                                            <div class="text-center">
+                                                <div class="spinner-border" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Analytics Section -->
+                    <div class="tab-pane fade" id="analytics-section">
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="card-title">Sales by Day</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="sales-by-day-chart" height="300"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="card-title">Popular Items</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="popular-items-chart" height="300"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-4">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="card-title">Monthly Revenue</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="monthly-revenue-chart" height="250"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Settings Section -->
+                    <div class="tab-pane fade" id="settings-section">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <h5 class="card-title">Restaurant Information</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <form id="restaurant-info-form">
+                                            <div class="mb-3">
+                                                <label for="restaurant-name" class="form-label">Restaurant Name</label>
+                                                <input type="text" class="form-control" id="restaurant-name" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="restaurant-description" class="form-label">Description</label>
+                                                <textarea class="form-control" id="restaurant-description" rows="3"></textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="restaurant-address" class="form-label">Address</label>
+                                                <input type="text" class="form-control" id="restaurant-address" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="restaurant-phone" class="form-label">Phone Number</label>
+                                                <input type="tel" class="form-control" id="restaurant-phone" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="restaurant-email" class="form-label">Email</label>
+                                                <input type="email" class="form-control" id="restaurant-email" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="restaurant-logo" class="form-label">Logo</label>
+                                                <input type="file" class="form-control" id="restaurant-logo" accept="image/*">
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <h5 class="card-title">Business Hours</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <form id="business-hours-form">
+                                            <div class="mb-3" id="hours-container">
+                                                <!-- Days of week will be populated here -->
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">Save Hours</button>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="card mb-4">

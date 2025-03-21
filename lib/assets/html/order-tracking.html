@@ -1,46 +1,28 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Tracking - Musika</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Order Tracking</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <style>
-        .bottom-nav {
-            display: none; /* Hidden by default */
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: white;
-            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-
-        .bottom-nav a {
-            display: inline-block;
-            padding: 10px;
-            color: black;
-            text-decoration: none;
-        }
-
-        @media (max-width: 768px) {
-            .bottom-nav {
-                display: flex; /* Show on mobile */
-            }
+        #map {
+            height: 400px;
+            width: 100%;
         }
     </style>
 </head>
-<body>
-    <div class="container mx-auto">
-        <h1 class="text-2xl font-bold">Order Tracking Page</h1>
-        <!-- Order tracking content goes here -->
+<body class="bg-gray-100">
+    <div class="container mx-auto p-4">
+        <h1 class="text-2xl font-bold mb-4">Order Tracking</h1>
+        <div id="map"></div>
+        <div class="mt-4">
+            <h2 class="text-lg font-bold">Order Details</h2>
+            <p id="orderDetails"></p>
+        </div>
     </div>
-    <div class="bottom-nav">
-        <a href="profile.html">Profile</a>
-        <a href="dashboard.html">Dashboard</a>
-        <a href="order-tracking.html">Order Tracking</a>
-        <a href="shopping.html">Shopping</a>
-        <a href="cart.html">Cart</a>
-    </div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="order-tracking.js"></script>
 </body>
 </html>

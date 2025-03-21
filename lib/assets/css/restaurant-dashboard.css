@@ -1,0 +1,415 @@
+/* Restaurant Dashboard Styles */
+
+/* Sidebar Styles */
+#sidebar {
+    min-height: 100vh;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    padding: 0;
+}
+
+#sidebar .nav-link {
+    color: rgba(255, 255, 255, 0.8);
+    padding: 0.75rem 1rem;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+#sidebar .nav-link:hover {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+#sidebar .nav-link.active {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-left: 4px solid #0d6efd;
+}
+
+#sidebar .nav-link i {
+    margin-right: 0.5rem;
+}
+
+/* Main Content Area */
+main {
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+}
+
+/* Dashboard Cards */
+.card {
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    margin-bottom: 1.5rem;
+}
+
+.card-header {
+    background-color: rgba(0, 0, 0, 0.03);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    padding: 0.75rem 1.25rem;
+}
+
+.card-title {
+    margin-bottom: 0;
+    font-weight: 600;
+}
+
+/* Order Cards */
+.order-card {
+    transition: all 0.3s ease;
+}
+
+.order-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.order-items {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+/* Menu Management */
+.menu-item-card {
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.menu-item-card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.menu-item-card .menu-item-image {
+    height: 150px;
+    object-fit: cover;
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+}
+
+.menu-item-card .menu-item-actions {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    display: none;
+}
+
+.menu-item-card:hover .menu-item-actions {
+    display: block;
+}
+
+.category-item {
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    background-color: #f8f9fa;
+    margin-bottom: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.category-item:hover {
+    background-color: #e9ecef;
+}
+
+/* Analytics Section */
+.analytics-card {
+    height: 100%;
+}
+
+/* Settings Section */
+.settings-card {
+    margin-bottom: 1.5rem;
+}
+
+/* Order Status Badges */
+.badge.bg-warning {
+    color: #212529;
+}
+
+/* Time Slots in Business Hours */
+.time-slot {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.time-slot .form-check {
+    margin-right: 1rem;
+}
+
+/* Toast Notifications */
+.toast-container {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1050;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 767.98px) {
+    #sidebar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 1000;
+        padding: 0;
+        overflow-x: hidden;
+        overflow-y: auto;
+        width: 100%;
+        max-width: 250px;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+    }
+    
+    #sidebar.show {
+        transform: translateX(0);
+    }
+    
+    .sidebar-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        display: none;
+    }
+    
+    .sidebar-backdrop.show {
+        display: block;
+    }
+    
+    main {
+        width: 100%;
+    }
+}
+
+/* Menu Item Modal */
+#addMenuItemModal .modal-body {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.menu-image-preview {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 0.25rem;
+    margin-bottom: 1rem;
+}
+
+/* Driver Assignment Modal */
+#assignDriverModal .modal-body {
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+/* Order Filtering */
+.order-filter-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.order-search {
+    width: 300px;
+}
+
+/* Charts */
+.chart-container {
+    position: relative;
+    height: 300px;
+}
+
+/* Loading Spinner */
+.spinner-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.spinner-container {
+    text-align: center;
+}
+
+/* Toggle Switch for Restaurant Status */
+.form-switch .form-check-input {
+    width: 3em;
+    height: 1.5em;
+}
+
+.form-switch .form-check-input:checked {
+    background-color: #198754;
+    border-color: #198754;
+}
+
+/* Business Hours */
+.day-hours {
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    border-radius: 0.25rem;
+    background-color: #f8f9fa;
+}
+
+.day-hours .day-name {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.hours-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.hours-row .form-control {
+    width: 120px;
+    margin-right: 0.5rem;
+}
+
+.add-hours-btn {
+    margin-top: 0.5rem;
+}
+
+/* Add Menu Item Form */
+.add-menu-item-container {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.add-menu-item-container h4 {
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 0.75rem;
+}
+
+/* Notification Badge */
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    padding: 0.25rem 0.5rem;
+    border-radius: 50%;
+    background-color: #dc3545;
+    color: white;
+    font-size: 0.75rem;
+}
+
+/* Status Timeline */
+.status-timeline {
+    position: relative;
+    padding-left: 2rem;
+}
+
+.status-timeline::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0.5rem;
+    width: 2px;
+    background-color: #dee2e6;
+}
+
+.status-item {
+    position: relative;
+    padding-bottom: 1.5rem;
+}
+
+.status-item::before {
+    content: '';
+    position: absolute;
+    left: -1.5rem;
+    top: 0.25rem;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    background-color: #6c757d;
+}
+
+.status-item.completed::before {
+    background-color: #198754;
+}
+
+.status-item.active::before {
+    background-color: #0d6efd;
+}
+
+.status-item:last-child {
+    padding-bottom: 0;
+}
+
+/* Driver List */
+.driver-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.driver-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    border-radius: 0.25rem;
+    background-color: #f8f9fa;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.driver-item:hover {
+    background-color: #e9ecef;
+}
+
+.driver-item.selected {
+    background-color: #cfe2ff;
+    border: 1px solid #0d6efd;
+}
+
+.driver-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 1rem;
+    object-fit: cover;
+}
+
+.driver-info {
+    flex: 1;
+}
+
+.driver-name {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.driver-details {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.driver-status {
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.driver-status.available {
+    background-color: #d1e7dd;
+    color: #0f5132;
+}
+
+.driver-status.busy {
+    background-color: #f8d7da;
+    color: #842029;
+}

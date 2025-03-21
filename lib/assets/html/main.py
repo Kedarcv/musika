@@ -11,6 +11,7 @@ This module implements a VS Code-like IDE with advanced academic features includ
     - Real-time syntax analysis
 """
 
+
 import tkinter as tk
 from tkinter import ttk, messagebox, font, filedialog
 from tkinter.filedialog import asksaveasfilename, askopenfilename
@@ -23,7 +24,7 @@ import time
 import json
 from pathlib import Path
 from pygments import lex
-from pygments.lexers import PythonLexer
+from pygments.lexers import get_all_lexers, get_lexer_for_filename
 from pygments.styles import get_style_by_name
 import threading
 from datetime import datetime
@@ -34,6 +35,9 @@ from ttkthemes import ThemedTk
 import numpy as np
 import jedi
 import webbrowser
+import logging
+
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class CodeAnalyzer:
     """Analyzes Python code for metrics and quality."""
@@ -216,10 +220,13 @@ class LanguageSupport:
         
     def load_languages(self):
         """Load supported languages and their lexers."""
+        logging.debug('Loading supported languages...')
         for lexer in get_all_lexers():
+            logging.debug('Lexer structure: %s', lexer)
+            logging.debug('Processing lexer: %s', repr(lexer))
             name = lexer[0]
             extensions = lexer[2]
-            if extensions:  # Only add languages with file extensions
+            if extensions and isinstance(extensions, tuple):  # Ensure extensions are a tuple
                 self.supported_languages[name] = {
                     'extensions': extensions,
                     'mime_types': lexer[3]
@@ -227,7 +234,9 @@ class LanguageSupport:
                 for ext in extensions:
                     if ext.startswith('.'):
                         self.file_extensions[ext[1:]] = name
-                        
+            logging.debug('Name: %s, Extensions: %s', name, extensions)
+        logging.debug('Supported languages loaded: %s', self.supported_languages)
+        
     def get_language_for_file(self, filename):
         """Get language based on file extension."""
         ext = filename.split('.')[-1] if '.' in filename else ''
@@ -569,6 +578,7 @@ class VSCodeLikeIDE:
     """
     
     def __init__(self, root):
+        logging.debug('Starting the CodeTerm IDE...')
         self.root = root
         self.root.title("PyVSCode IDE - Academic Edition")
         
